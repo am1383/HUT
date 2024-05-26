@@ -3,17 +3,17 @@ use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
 use STD.textio.all; -- Reading File Library
 
-entity instruction_memory is
+entity Instruction_Memory is
 	port (
-		read_address: in STD_LOGIC_VECTOR (15 downto 0);
-		instruction, last_instr_address: out STD_LOGIC_VECTOR (15 downto 0)
+		read_address: in std_logic_vector (15 downto 0);
+		instruction, last_instr_address: out std_logic_vector (15 downto 0)
 	);
-end instruction_memory;
+end Instruction_Memory;
 
 architecture behavior of instruction_memory is	  
 
     -- 128 byte instruction memory (32 rows * 4 bytes/row)
-    type mem_array is array(0 to 15) of STD_LOGIC_VECTOR (15 downto 0);
+    type mem_array is array(0 to 15) of std_logic_vector (15 downto 0);
     signal data_mem: mem_array := (
         "0000000000000000", -- Initialize Data
         "0000000000000000", -- &1

@@ -2,15 +2,15 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
 
-entity ALU_control is
+entity ALU_Controller is
 	port (
-		funct:            in std_logic_vector(5 downto 0);
-		ALU_op:           in std_logic_vector(1 downto 0);
+		funct:            in  std_logic_vector(5 downto 0);
+		ALU_op:           in  std_logic_vector(1 downto 0);
 		ALU_control_fuct: out std_logic_vector(3 downto 0)
 	);
-end ALU_control;
+end ALU_Controller;
 
-architecture behavior of ALU_control is
+architecture behavior of ALU_Controller is
 	signal and_op: std_logic_vector(3 downto 0):= "0000";
 	signal or_op: std_logic_vector(3 downto 0):= "0001";
 	signal add: std_logic_vector(3 downto 0):= "0010";
