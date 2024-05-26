@@ -10,7 +10,7 @@ entity Instruction_Memory is
 	);
 end Instruction_Memory;
 
-architecture behavior of instruction_memory is	  
+architecture behavior of Instruction_Memory is	  
 
     -- 128 byte instruction memory (32 rows * 4 bytes/row)
     type mem_array is array(0 to 15) of std_logic_vector (15 downto 0);
@@ -37,16 +37,16 @@ architecture behavior of instruction_memory is
 
     -- The process for reading the instructions into memory
     process 
-        file file_pointer : text;
+        file file_pointer     : text;
         variable line_content : string(1 to 16);
-        variable line_num : line;
-        variable i:  integer := 0;
-        variable j : integer := 0;
-        variable char : character:='0'; 
+        variable line_num     : line;
+        variable i:  integer  := 0;
+        variable j : integer  := 0;
+        variable char : character :='0'; 
     
         begin
         -- Open instructions.txt and only read from it
-        file_open(file_pointer, "instructions.txt", READ_MODE);
+        file_open(file_pointer, "MIPS.txt", READ_MODE);
         -- Read until the end of the file is reached  
         while not endfile(file_pointer) loop
             readline(file_pointer,line_num); -- Read a line from the file

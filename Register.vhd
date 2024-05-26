@@ -2,7 +2,7 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
 
-entity registers is 
+entity Register is 
 	port (
         CLK:                               in  std_logic;
 		reg_write:                         in  std_logic;
@@ -10,11 +10,11 @@ entity registers is
 		write_data:                        in  std_logic_vector(15 downto 0);
 		read_data_1, read_data_2:          out std_logic_vector(15 downto 0)
 	);
-end registers;
+end Register;
 
 architecture behavior of registers is
 
-    type mem_array is array(0 to 15) of STD_LOGIC_VECTOR (15 downto 0);
+    type mem_array is array(0 to 15) of std_logic_vector(15 downto 0);
     signal reg_mem: mem_array := (
         "00000000000000000000000000000000", -- $0
         "00000000000000000000000000000000", -- &1

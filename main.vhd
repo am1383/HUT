@@ -39,7 +39,7 @@ architecture behavior of main is
 			current_address: out std_logic_vector(15 downto 0)
 		);
 	end component;
-	component instruction_memory
+	component Instruction_Memory
 		port (
 			read_address:                    in std_logic_vector (15 downto 0);
 			instruction, last_instr_address: out std_logic_vector (15 downto 0)
@@ -110,7 +110,7 @@ architecture behavior of main is
 		);		
 	end component;
 	
-	component memory is
+	component Data_Memory is
 	port (
 		address, write_data: in STD_LOGIC_VECTOR (15 downto 0);
 		MemWrite, MemRead,CLK: in STD_LOGIC;
@@ -129,7 +129,7 @@ architecture behavior of main is
 				en <= '0';
 		end case;
 
-		if CLK='1' and CLK'event then
+		if (CLK='1' and CLK'event) then
 			case s is
 				when loading =>
 					s <= running; -- give 1 cycle to load the instructions into memory
