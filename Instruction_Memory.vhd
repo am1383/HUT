@@ -10,7 +10,7 @@ entity instruction_memory is
 	);
 end instruction_memory;
 
-architecture behavioral of instruction_memory is	  
+architecture behavior of instruction_memory is	  
 
     -- 128 byte instruction memory (32 rows * 4 bytes/row)
     type mem_array is array(0 to 15) of STD_LOGIC_VECTOR (15 downto 0);
@@ -74,4 +74,4 @@ architecture behavioral of instruction_memory is
     -- Since the registers are in multiples of 4 bytes, we can ignore the last two bits
     instruction <= data_mem(to_integer(unsigned(read_address(15 downto 2))));
 
-end behavioral;
+end behavior;
