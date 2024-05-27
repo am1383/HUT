@@ -47,8 +47,8 @@ architecture behavior of main is
 	end component;
 	component Register
 		port (
-			CLK:       in std_logic;
-			reg_write: in std_logic;
+			CLK:       						   in std_logic;
+			reg_write: 						   in std_logic;
 			read_reg_1, read_reg_2, write_reg: in std_logic_vector(4 downto 0);
 			write_data:                        in std_logic_vector(15 downto 0);
 			read_data_1, read_data_2:          out std_logic_vector(15 downto 0)

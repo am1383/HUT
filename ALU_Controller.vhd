@@ -27,6 +27,4 @@ architecture behavior of ALU_Controller is
 						or_op when(ALU_op="10" and funct="100101") else
 						set_on_less_than when(ALU_op="10" and funct="101010") else
 						"0000";
-						
-
 end behavior;
