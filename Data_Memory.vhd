@@ -13,25 +13,26 @@ end Data_Memory;
 
 architecture behavioral of Data_Memory is	  
 
-type Memory_Array is array(0 to 15) of STD_LOGIC_VECTOR (15 downto 0);
+type Memory_Array is array(0 to 15) of std_logic_vector (15 downto 0);
 
 signal data_mem: Memory_Array := (
     X"00000000", -- initialize data Data_Memory
-    X"00000000", -- mem 1
-    X"00000000",
-    X"00000000",
-    X"00000000",
-    X"00000000",
-    X"00000000",
-    X"00000000",
-    X"00000000",
-    X"00000000", 
-    X"00000000", -- mem 10 
-    X"00000000", 
-    X"00000000",
-    X"00000000",
-    X"00000000",
-    X"00000000",);
+    X"00000000", -- &1
+    X"00000000", -- &2
+    X"00000000", -- &3
+    X"00000000", -- &4
+    X"00000000", -- &5
+    X"00000000", -- &6
+    X"00000000", -- &7
+    X"00000000", -- &8
+    X"00000000", -- &9
+    X"00000000", -- &10 
+    X"00000000", -- &11
+    X"00000000", -- &12
+    X"00000000", -- &13
+    X"00000000", -- &14
+    X"00000000", -- &15
+    );
 
 begin
 

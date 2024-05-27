@@ -69,6 +69,12 @@ architecture behavior of main is
 			z:   out std_logic_vector(n-1 downto 0)
 		);
 	end component;
+	component Two_Complement
+		Port ( 
+			input  : in  std_logic_vector (15 downto 0);
+			output : out std_logic_vector (15 downto 0)
+		);
+	end component;
 	component ALU_Controller
 		port (
 			funct:  in std_logic_vector(5 downto 0);
@@ -96,20 +102,26 @@ architecture behavior of main is
 			alu_result: out std_logic_vector(15 downto 0)
 		);
 	end component;
-	component shift
+	component ShiftOne
 		generic (n1: natural:= 16; n2: natural:= 16; k: natural:= 2);
 		port (
 			x: in std_logic_vector(n1-1 downto 0);
 			y: out std_logic_vector(n2-1 downto 0)
 		);
 	end component;
+	component ShiftSeven 
+		generic (n1: natural:= 16; n2: natural:= 16; k: natural:=7);
+		port(
+			x: in std_logic_vector(n1-1 downto 0);
+			y: out std_logic_vector(n2-1 downto 0)
+		);
+		end component;
 	component Adder
 		port (
 			x,y: in std_logic_vector(15 downto 0);
 			z:   out std_logic_vector(15 downto 0)
 		);		
 	end component;
-	
 	component Data_Memory is
 	port (
 		address, write_data: in STD_LOGIC_VECTOR (15 downto 0);
@@ -218,10 +230,10 @@ architecture behavior of main is
 		y => shifted_immediate
 	);
 
-	-- The +4 adder for the pc
+	-- The +2 adder for the pc
 	ADD1: adder port map (
 		x => instr_address,
-		y => "00000000000000000000000000000100",
+		y => "0000000000000010",
 		z => incremented_address
 	);
 
