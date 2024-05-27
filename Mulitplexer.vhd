@@ -5,8 +5,8 @@ use IEEE.numeric_std.all;
 entity Mulitplexer is 
 	generic (n: natural:= 1); -- number of bits in the choices
 	port (
-		x,y: in std_logic_vector(n-1 downto 0);
-		s:   in std_logic;
+		x,y: in  std_logic_vector(n-1 downto 0);
+		s:   in  std_logic;
 		z:   out std_logic_vector(n-1 downto 0)
 	);
 end Mulitplexer;

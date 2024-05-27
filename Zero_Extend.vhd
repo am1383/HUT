@@ -4,7 +4,7 @@ use IEEE.numeric_std.all;
 
 entity Zero_Extend is
 	port (
-		x: in std_logic_vector(7 downto 0);
+		x: in  std_logic_vector(7 downto 0);
 		y: out std_logic_vector(15 downto 0)
 	);
 end Zero_Extend;

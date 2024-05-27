@@ -18,10 +18,10 @@ architecture behavior of PC is
 
         process(CLK)
             begin
-            current_address <= address;
-            if (CLK='0' and CLK'event) then
-                address <= address_to_load;
-            end if;
+                current_address <= address;
+                if (CLK='0' and CLK'event) then
+                    address <= address_to_load;
+                end if;
         end process;
 
 end behavior;

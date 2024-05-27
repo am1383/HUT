@@ -5,7 +5,7 @@ use IEEE.numeric_std.all;
 entity ShiftOne is
 	generic (n1: natural:= 16; n2: natural:= 16; k: natural:= 1);
 	port (
-		x: in std_logic_vector(n1-1 downto 0);
+		x: in  std_logic_vector(n1-1 downto 0);
 		y: out std_logic_vector(n2-1 downto 0)
 	);
 end entity;

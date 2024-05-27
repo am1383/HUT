@@ -5,7 +5,7 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 entity Adder is
 	port (
-		x,y: in std_logic_vector(15 downto 0);
+		x,y: in  std_logic_vector(15 downto 0);
 		z: 	 out std_logic_vector(15 downto 0)
 	);
 end entity;

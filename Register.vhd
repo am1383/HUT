@@ -12,10 +12,11 @@ entity Register is
 	);
 end Register;
 
-architecture behavior of registers is
+architecture behavior of Register is
 
     type mem_array is array(0 to 15) of std_logic_vector(15 downto 0);
     signal reg_mem: mem_array := (
+
         "0000000000000000", -- $0
         "0000000000000000", -- &1
         "0000000000000000", -- &2
