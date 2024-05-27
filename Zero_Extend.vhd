@@ -11,5 +11,6 @@ end Zero_Extend;
 
 architecture behavior of Zero_Extend is
 	begin
+		-- Extend Zero In Output
 	    y <= std_logic_vector(resize(unsigned(x), y'length));
 end behavior;

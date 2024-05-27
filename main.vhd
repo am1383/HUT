@@ -11,30 +11,30 @@ end main;
 
 architecture behavior of main is
 
-	signal instr_address: std_logic_vector(15 downto 0); -- Address of the instruction to run
-	signal next_address:  std_logic_vector(15 downto 0); -- Next address to be loaded into PC
-	signal instruction:   std_logic_vector(15 downto 0); -- The actual instruction to run
+	signal instr_address: std_logic_vector(15 downto 0); -- Address To Run
+	signal next_address:  std_logic_vector(15 downto 0); -- Next Address For PC
+	signal instruction:   std_logic_vector(15 downto 0); -- Current Addresss Instruction
 	signal read_data_1, read_data_2, write_data, extended_immediate, shifted_immediate, alu_in_2, alu_result, last_instr_address, incremented_address, add2_result, mux4_result, concatenated_pc_and_jump_address, mem_read_data: std_logic_vector(15 downto 0):= "00000000000000000000000000000000"; -- vhdl does not allow me to port map " y => incremented_address(15 downto 28) & shifted_jump_address "
 	signal shifted_jump_address: std_logic_vector(27 downto 0);
-	signal jump_address: std_logic_vector(25 downto 0);
-	signal immediate: std_logic_vector(15 downto 0);
-	signal opcode, funct: std_logic_vector(5 downto 0);
+	signal jump_address:         std_logic_vector(25 downto 0);
+	signal immediate:            std_logic_vector(15 downto 0);
+	signal opcode, funct:        std_logic_vector(5 downto 0);
 	signal rs, rt, rd, shampt, write_reg: std_logic_vector(4 downto 0);
-	signal alu_control_fuct: std_logic_vector(3 downto 0);
+	signal alu_control_fuct:     std_logic_vector(3 downto 0);
 	signal reg_dest, jump, branch, mem_read, mem_to_reg, mem_write, alu_src, reg_write, alu_zero, branch_and_alu_zero: std_logic:= '0'; -- vhdl does not allow me to port map " s => (branch and alu_zero) "
-	signal alu_op: std_logic_vector(1 downto 0);
+	signal alu_op:                           std_logic_vector(1 downto 0);
 
-	 -- Enum for cheCLKing if the instructions have loaded
+	 -- Check To Instruction Is Loaded
 	type state is (loading, running, done);
 	signal s: state:= loading;
 
-	-- The cloCLK for the other components; starts when the state is ready
+	-- Enable Signal
 	signal en: std_logic:= '0';
 
-	-- Load the other components
+	
 	component PC
 		port (
-			CLK: in std_logic;
+			CLK:			 in  std_logic;
 			address_to_load: in  std_logic_vector(15 downto 0);
 			current_address: out std_logic_vector(15 downto 0)
 		);
@@ -123,11 +123,18 @@ architecture behavior of main is
 		);		
 	end component;
 	component Data_Memory is
-	port (
-		address, write_data:   in  std_logic_vector (15 downto 0);
-		MemWrite, MemRead,CLK: in  std_logic;
-		read_data: 			   out std_logic_vector (15 downto 0)
+		port (
+			address, write_data:   in  std_logic_vector (15 downto 0);
+			MemWrite, MemRead,CLK: in  std_logic;
+			read_data: 			   out std_logic_vector (15 downto 0)
 	);
+	end component;
+	component Decoder is
+		Port ( 
+			input  : in  std_logic_vector (3 downto 0);
+			enable : in  std_logic;
+			output : out std_logic_vector (15 downto 0)
+		);
 	end component;
 
 	begin
@@ -156,7 +163,6 @@ architecture behavior of main is
 		end if;
 	end process;
 
-	-- Wire some stuff
 	opcode <= instruction(15 downto 26);
 	rs <= instruction(25 downto 21);
 	rt <= instruction(20 downto 16);
@@ -260,7 +266,7 @@ architecture behavior of main is
 	);
 
 	-- This mux chooses between the result of mux4 and the jump address
-	concatenated_pc_and_jump_address <= incremented_address(15 downto 28) & shifted_jump_address; -- I'm ashamed of myself
+	concatenated_pc_and_jump_address <= incremented_address(15 downto 28) & shifted_jump_address;
 	MUX5: Multiplexer generic map (16) port map (
 		x => mux4_result,
 		y => concatenated_pc_and_jump_address,
