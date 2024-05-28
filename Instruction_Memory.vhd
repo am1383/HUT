@@ -1,7 +1,7 @@
 library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
-use STD.textio.all; -- Reading File Library
+use std.textio.all; -- Reading File Library
 
 entity Instruction_Memory is
 	port (

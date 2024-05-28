@@ -1,7 +1,7 @@
 library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.std_logic_arith.all;
-use IEEE.STD_LOGIC_UNSIGNED.ALL;
+use IEEE.std_logic_unsigned.all;
 
 entity Adder is
 	port (

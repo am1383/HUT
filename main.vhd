@@ -1,7 +1,7 @@
 library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.std_logic_arith.all;
-use IEEE.STD_LOGIC_UNSIGNED.ALL;
+use IEEE.std_logic_unsigned.ALL;
 
 entity main is
 	port(
@@ -11,18 +11,19 @@ end main;
 
 architecture behavior of main is
 
-	signal instr_address: std_logic_vector(15 downto 0); -- Address To Run
-	signal next_address:  std_logic_vector(15 downto 0); -- Next Address For PC
-	signal instruction:   std_logic_vector(15 downto 0); -- Current Addresss Instruction
+	signal instr_address: 		       std_logic_vector(15 downto 0); -- Address To Run
+	signal next_address:  		       std_logic_vector(15 downto 0); -- Next Address For PC
+	signal instruction:   	           std_logic_vector(15 downto 0); -- Current Addresss Instruction
 	signal read_data_1, read_data_2, write_data, extended_immediate, shifted_immediate, alu_in_2, alu_result, last_instr_address, incremented_address, add2_result, mux4_result, concatenated_pc_and_jump_address, mem_read_data: std_logic_vector(15 downto 0):= "00000000000000000000000000000000"; -- vhdl does not allow me to port map " y => incremented_address(15 downto 28) & shifted_jump_address "
-	signal shifted_jump_address: std_logic_vector(27 downto 0);
-	signal jump_address:         std_logic_vector(25 downto 0);
-	signal immediate:            std_logic_vector(15 downto 0);
-	signal opcode, funct:        std_logic_vector(5 downto 0);
-	signal rs, rt, rd, shampt, write_reg: std_logic_vector(4 downto 0);
-	signal alu_control_fuct:     std_logic_vector(3 downto 0);
+	signal shifted_jump_address:       std_logic_vector(27 downto 0);
+	signal jump_address:               std_logic_vector(25 downto 0);
+	signal Immediate-Y:                std_logic_vector(3 downto 0);
+	signal Immediate-Z:				   std_logic_vector(8 downto 0);
+	signal opcode:       		 	   std_logic_vector(2 downto 0);
+	signal rA-Y, rB-Y, rA-Z,write_reg: std_logic_vector(3 downto 0);
+	signal alu_control_fuct:     	   std_logic_vector(3 downto 0);
 	signal reg_dest, jump, branch, mem_read, mem_to_reg, mem_write, alu_src, reg_write, alu_zero, branch_and_alu_zero: std_logic:= '0'; -- vhdl does not allow me to port map " s => (branch and alu_zero) "
-	signal alu_op:                           std_logic_vector(1 downto 0);
+	signal alu_op:                     std_logic_vector(1 downto 0);
 
 	 -- Check To Instruction Is Loaded
 	type state is (loading, running, done);
@@ -31,7 +32,6 @@ architecture behavior of main is
 	-- Enable Signal
 	signal en: std_logic:= '0';
 
-	
 	component PC
 		port (
 			CLK:			 in  std_logic;
@@ -56,7 +56,7 @@ architecture behavior of main is
 	end component;
 	component Controller
 		port (
-			opcode: 																    in  std_logic_vector(5 downto 0);
+			opcode: 																    in  std_logic_vector(2 downto 0);
 			reg_dest,jump, branch, mem_read, mem_to_reg, mem_write, alu_src, reg_write: out std_logic;
 			alu_op:																	    out std_logic_vector(1 downto 0)
 		);
@@ -153,7 +153,7 @@ architecture behavior of main is
 				when loading =>
 					s <= running; -- give 1 cycle to load the instructions into memory
 				when running =>
-					if instr_address > last_instr_address then
+					if (instr_address > last_instr_address) then
 						s <= done; -- stop moving the pc after it has passed the last instruction
 						en <= '0';
 					end if;
@@ -163,14 +163,12 @@ architecture behavior of main is
 		end if;
 	end process;
 
-	opcode <= instruction(15 downto 26);
-	rs <= instruction(25 downto 21);
-	rt <= instruction(20 downto 16);
-	rd <= instruction(15 downto 11);
-	shampt <= instruction(10 downto 6);
-	funct <= instruction(5 downto 0);
-	immediate <= instruction(15 downto 0);
-	jump_address <= instruction(25 downto 0);
+	opcode      <= instruction(15 downto 13);
+	rA-Y        <= instruction(12 downto 9);
+	rB-Y        <= instruction(3 downto 0);l
+	Immediate-Y <= instruction(7 downto 4);
+	rA-Z        <= instruction(3 downto 0);
+	Immediate-Z <= instruction(12 downto 4);
 
 	Program_Counter: PC port map (en, next_address, instr_address); 
 
@@ -260,7 +258,7 @@ architecture behavior of main is
 	);
 
 	-- The Shift Left 2 for the jump instruction
-	SHIFT2: ShiftOne generic map (n1 =>26, n2 => 28) port map (
+	SHIFT2: ShiftOne generic map (n1 =>26, n2 =>28) port map (
 		x => jump_address,
 		y => shifted_jump_address
 	);
