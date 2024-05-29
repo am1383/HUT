@@ -14,15 +14,13 @@ architecture behavior of main is
 	signal instr_address: 		       std_logic_vector(15 downto 0); -- Address To Run
 	signal next_address:  		       std_logic_vector(15 downto 0); -- Next Address For PC
 	signal instruction:   	           std_logic_vector(15 downto 0); -- Current Addresss Instruction
-	signal read_data_1, read_data_2, write_data, Z.E_Immediate-Y, Z.E-Immediate-Z, S.E-Immediate, Shifted_Immediate, Shifted_Add, SevenShifted,SevenShifted2, alu_in_2, alu_result, last_instr_address, Add1_Result, Add2_Result, Add3_Result, PC_Result, D_Result, TwoComp_Result: std_logic_vector(15 downto 0):= "00000000000000000000000000000000"; -- vhdl does not allow me to port map " y => incremented_address(15 downto 28) & shifted_jump_address "
-	signal shifted_jump_address:       std_logic_vector(27 downto 0);
-	signal jump_address:               std_logic_vector(25 downto 0);
+	signal read_data_1, read_data_2, write_data, Z.E_Immediate-Y, Z.E-Immediate-Z, S.E-Immediate, Shifted_Immediate, Shifted_Add, SevenShifted,SevenShifted2, alu_in_2, alu_result, last_instr_address, Add1_Result, Add2_Result, Add3_Result, PC_Result, D_Result, TwoComp_Result: std_logic_vector(15 downto 0):= "00000000000000000000000000000000";
 	signal Immediate-Y:                std_logic_vector(3 downto 0);
 	signal Immediate-Z:				   std_logic_vector(8 downto 0);
 	signal opcode:       		 	   std_logic_vector(2 downto 0);
 	signal rA-Y, rB-Y, rA-Z,write_reg: std_logic_vector(3 downto 0);
 	signal alu_control_fuct:     	   std_logic_vector(3 downto 0);
-	signal WR-Sel, PC-Sel, mem_read, mem_to_reg, WD-D, alu_src, reg_write, alu_zero, branch_and_alu_zero: std_logic:= '0'; -- vhdl does not allow me to port map " s => (branch and alu_zero) "
+	signal WR-Sel, PC-Sel, mem_read, mem_to_reg, WD-D, alu_src, reg_write, alu_zero: std_logic:= '0';
 	signal alu_op, WD-Sel:             std_logic_vector(1 downto 0);
 
 	 -- Check To Instruction Is Loaded
