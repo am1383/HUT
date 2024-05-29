@@ -241,6 +241,11 @@ architecture behavior of main is
 		z => incremented_address
 	);
 
+	ADD2: Adder port map ();
+
+	ADD3: Adder port map ();
+	
+	MUX4: Multiplexer4 generic map (16) port map ();
 	-- The mux between the +4 adder and the following adder
 	branch_and_alu_zero <= branch and alu_zero;
 	MUX4: Multiplexer generic map (16) port map (

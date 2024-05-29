@@ -1,6 +1,6 @@
 library IEEE;
-use IEEE.STD_LOGIC_1164.all;
-use IEEE.NUMERIC_STD.all;
+use IEEE.std_logic_1164.all;
+use IEEE.numeric_std.all;
 
 entity Two_Complement is
     Port ( 
