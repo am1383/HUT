@@ -14,7 +14,7 @@ architecture behavior of main is
 	signal instr_address: 		       std_logic_vector(15 downto 0); -- Address To Run
 	signal next_address:  		       std_logic_vector(15 downto 0); -- Next Address For PC
 	signal instruction:   	           std_logic_vector(15 downto 0); -- Current Addresss Instruction
-	signal read_data_1, read_data_2, write_data, extended_immediate, shifted_immediate, alu_in_2, alu_result, last_instr_address, incremented_address, add2_result, mux4_result, concatenated_pc_and_jump_address, mem_read_data: std_logic_vector(15 downto 0):= "00000000000000000000000000000000"; -- vhdl does not allow me to port map " y => incremented_address(15 downto 28) & shifted_jump_address "
+	signal read_data_1, read_data_2, write_data, Z.E_Immediate-Y, Z.E-Immediate-Z, S.E-Immediate, Shifted_Immediate, Shifted_Add, SevenShifted,SevenShifted2, alu_in_2, alu_result, last_instr_address, Add1_Result, Add2_Result, Add3_Result, PC_Result, D_Result, TwoComp_Result: std_logic_vector(15 downto 0):= "00000000000000000000000000000000"; -- vhdl does not allow me to port map " y => incremented_address(15 downto 28) & shifted_jump_address "
 	signal shifted_jump_address:       std_logic_vector(27 downto 0);
 	signal jump_address:               std_logic_vector(25 downto 0);
 	signal Immediate-Y:                std_logic_vector(3 downto 0);
@@ -22,8 +22,8 @@ architecture behavior of main is
 	signal opcode:       		 	   std_logic_vector(2 downto 0);
 	signal rA-Y, rB-Y, rA-Z,write_reg: std_logic_vector(3 downto 0);
 	signal alu_control_fuct:     	   std_logic_vector(3 downto 0);
-	signal reg_dest, jump, branch, mem_read, mem_to_reg, mem_write, alu_src, reg_write, alu_zero, branch_and_alu_zero: std_logic:= '0'; -- vhdl does not allow me to port map " s => (branch and alu_zero) "
-	signal alu_op:                     std_logic_vector(1 downto 0);
+	signal WR-Sel, PC-Sel, mem_read, mem_to_reg, WD-D, alu_src, reg_write, alu_zero, branch_and_alu_zero: std_logic:= '0'; -- vhdl does not allow me to port map " s => (branch and alu_zero) "
+	signal alu_op, WD-Sel:             std_logic_vector(1 downto 0);
 
 	 -- Check To Instruction Is Loaded
 	type state is (loading, running, done);
@@ -57,18 +57,26 @@ architecture behavior of main is
 	component Controller
 		port (
 			opcode: 																    in  std_logic_vector(2 downto 0);
-			reg_dest,jump, branch, mem_read, mem_to_reg, mem_write, alu_src, reg_write: out std_logic;
+			reg_dest,jump, branch, mem_read, mem_to_reg, WD-D, alu_src, reg_write: out std_logic;
 			alu_op:																	    out std_logic_vector(1 downto 0)
 		);
 	end component;
 	component Mulitplexer
 		generic (n: natural:= 1);
-		port (
-			x,y: in  std_logic_vector(n-1 downto 0);
-			s:   in  std_logic;
-			z:   out std_logic_vector(n-1 downto 0)
-		);
+			port (
+				x,y: in  std_logic_vector(n-1 downto 0);
+				s:   in  std_logic;
+				z:   out std_logic_vector(n-1 downto 0)
+			);
 	end component;
+	component Multiplexer4
+		generic (n: natural := 1);
+			port (
+				a, b, c, d: in  std_logic_vector(n-1 downto 0); -- Four data inputs
+				sel:        in  std_logic_vector(1 downto 0);    -- 2-bit selection line
+				z:          out std_logic_vector(n-1 downto 0)   -- Output
+			);
+		end component;
 	component Two_Complement
 		Port ( 
 			input  : in  std_logic_vector (15 downto 0);
@@ -174,116 +182,103 @@ architecture behavior of main is
 
 	Instruction_Memory: Instruction_Memory port map (instr_address, instruction, last_instr_address);
 
+	Sign_Extend: Sign_Extend port map (Immediate-Z, S.E-Immediate);
+
 	CONTROL1: Controller port map (
 		opcode => opcode,
-		reg_dest => reg_dest, 
+		PC-Sel => PC-Sel, 
 		jump => jump,
 		branch => branch, 
 		mem_read => mem_read, 
 		mem_to_reg => mem_to_reg,
-		mem_write => mem_write,
+		WD-D => WD-D,
 		alu_src => alu_src,
 		reg_write => reg_write,
 		alu_op => alu_op 
 	);
 
-	-- This mux is going into Register's Write Register port; chooses between rt and rd
-	MUX1: Multiplexer generic map(5) port map (
-		x => rt, 
-		y => rd, 
-		s => reg_dest,
-		z => write_reg
-	);
+	ALU_Controller: ALU_Controller port map (funct, alu_op, alu_control_fuct);
 
-	REG: Register port map (
-		CLK => en,
-		reg_write => reg_write,
-		read_reg_1 => rs,
-		read_reg_2 => rt,
-		write_reg => write_reg, 
-		write_data => write_data, 
-		read_data_1 => read_data_1, 
-		read_data_2 => read_data_2
-	);
+	Zero_Extend: Zero_Extend port map (Immediate-Y, Z.E_Immediate-Y);
 
-	ALU_CONTRL: ALU_Controller port map (funct, alu_op, alu_control_fuct);
+	Zero_Extend: Zero_Extend port map (Immediate-Z, Z.E_Immediate-Z);
 
-	---- This mux is going into the ALU's second input; chooses between read_data_2 and the immediate
-	SGN_EXT: Sign_Extend port map (immediate, extended_immediate);
+	ALU: ALU port map (read_data_1, Z.E_Immediate, alu_control_fuct, alu_zero, alu_result);
 
-	MUX2: Multiplexer generic map(16) port map (
-		x => read_data_2, 
-		y => extended_immediate, 
-		s => alu_src,
-		z => alu_in_2
-	);
-
-	ALU1: ALU port map (read_data_1, alu_in_2, alu_control_fuct, alu_zero, alu_result);
-
-	-- This mux is going into the Register's Write Data; chooses between the alu_result and read_data from data memory
-	MUX3: Multiplexer generic map (16) port map (
-		x => alu_result, 
-		y => mem_read_data, 
-		s => mem_to_reg,
-		z => write_data
-	);
-
-	-- The Shift Left 2 for the immediate
-	SHIFT1: ShiftOne port map (
-		x => extended_immediate,
-		y => shifted_immediate
-	);
-
-	-- The +2 adder for the pc
 	ADD1: Adder port map (
 		x => instr_address,
 		y => "0000000000000010",
-		z => incremented_address
+		z => Add1_Result
 	);
 
-	ADD2: Adder port map ();
-
-	ADD3: Adder port map ();
-	
-	MUX4: Multiplexer4 generic map (16) port map ();
-	-- The mux between the +4 adder and the following adder
-	branch_and_alu_zero <= branch and alu_zero;
-	MUX4: Multiplexer generic map (16) port map (
-		x => incremented_address,
-		y => add2_result,
-		s => branch_and_alu_zero,
-		z => mux4_result
+	ADD3: Adder port map (
+		x => Add2_Result,
+		y => S.E_Immediate,
+		z => Add3_Result
 	);
 
-	-- The adder between the PC and the sign-extended immediate
-	ADD2: Adder port map (
-		x => incremented_address,
-		y => shifted_immediate,
-		z => add2_result
+	ShiftOne: ShiftOne port map (
+		x => Add3_Result,
+		y => Shifted_Add	
 	);
 
-	-- The Shift Left 2 for the jump instruction
-	SHIFT2: ShiftOne generic map (n1 =>26, n2 =>28) port map (
-		x => jump_address,
-		y => shifted_jump_address
+	ShiftOne2: ShiftOne port map (
+		x => Z.E-Immediate_Z;
+		y => SevenShifted2
 	);
 
-	-- This mux chooses between the result of mux4 and the jump address
-	concatenated_pc_and_jump_address <= incremented_address(15 downto 28) & shifted_jump_address;
-	MUX5: Multiplexer generic map (16) port map (
-		x => mux4_result,
-		y => concatenated_pc_and_jump_address,
-		s => jump,
+	ShiftSeven: ShiftSeven port map (
+		x => Immediate-Z,
+		y => SevenShifted
+	);
+
+	TwoComp: Two_Complement port map (
+		input  => read_data_2,
+		output => TwoComp_Result
+	);
+
+	-- Multiplexer Choose Between PC-Jump Instruction's
+	MUX1PCSEL: Multiplexer generic map(16) port map (
+		x => Add1_Result, 
+		y => Shifted_Add, 
+		s => PC-Sel,
 		z => next_address
+	);
+    -- Multiplexer Choose Between Write Register Instruction's
+	MUX2WRSel: Multiplexer generic map(16) port map (
+		x => rA-Y, 
+		y => rA-Z, 
+		s => WR-Sel,
+		z => write_reg
+	);
+	-- Multiplexer Choose Between Register Write Data Instruction's
+	MUX3WDSel: Multiplexer4 generic map (16) port map (
+		a   => TwoComp_Result, 
+		b   => alu_result,
+		c   => SevenShifted,  
+		d   => D_Result,
+		sel => WD-Sel,
+		z   => write_data
+	);
+
+	REG: Register port map (
+		CLK         => en,
+		reg_write   => reg_write,
+		read_reg_1  => rB-Y,
+		read_reg_2  => rA-Y,
+		write_reg   => write_reg, 
+		write_data  => write_data, 
+		read_data_1 => read_data_1, 
+		read_data_2 => read_data_2
 	);
 	
 	MEM: Instruction_Memory port map (
-		address => alu_result,
-		write_data => read_data_2,
-		MemWrite => mem_write,
-		MemRead => mem_read,
-		CLK => en,
-		read_data => mem_read_data
+		address    => SevenShifted2,
+		write_data => read_data_1,
+		WD-D       => WD-D,
+		MemRead    => mem_read,
+		CLK        => en,
+		read_data  => D_Result
 	);
 
 end behavior;

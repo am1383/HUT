@@ -5,7 +5,7 @@ use IEEE.numeric_std.all;
 entity Controller is
 	port (
 		opcode:        in  std_logic_vector(2 downto 0);
-		reg_dest,jump, branch, mem_read, mem_to_reg, mem_write, alu_src, reg_write: out std_logic;
+		PC-Sel ,jump, branch, mem_read, mem_to_reg, mem_write, alu_src, reg_write: out std_logic;
 		alu_op:        out std_logic_vector(1 downto 0)
 	);
 end Controller;
