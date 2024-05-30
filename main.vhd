@@ -203,13 +203,13 @@ architecture behavior of main is
 
 	Zero_Extend: Zero_Extend generic map(9) port map (Immediate-Z, Z.E_Immediate-Z);
 
-	ALU: ALU port map (read_data_1, Z.E_Immediate, alu_control_fuct, alu_zero, ALU_Result);
+	ALU: ALU port map (read_data_1, Z.E_Immediate-Y, alu_control_fuct, alu_zero, ALU_Result);
 
 	Register: Register port map (
 		CLK         => en,
 		reg_write   => reg_write,
 		read_reg_1  => rB-Y,
-		read_reg_2  => rA-Z,
+		read_reg_2  => rB-Y,                     		
 		write_reg   => write_reg, 
 		write_data  => write_data, 
 		read_data_1 => read_data_1, 
@@ -232,7 +232,7 @@ architecture behavior of main is
 	);
 
 	ADD2: Adder port map (
-		In1 => read_data_2,
+		In1 => read_data_1,
 		In2 => instr_address,
 		Add_Output => Add2_Result
 	);
