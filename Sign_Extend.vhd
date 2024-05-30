@@ -3,14 +3,14 @@ use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
 
 entity Sign_Extend is
+	generic (n: natural := 1);
 	port (
-		x: in  std_logic_vector(8 downto 0);
-		y: out std_logic_vector(15 downto 0)
+		SE_Input:  in  std_logic_vector(n-1 downto 0);
+		SE_Output: out std_logic_vector(15 downto 0)
 	);
 end Sign_Extend;
 
 architecture behavior of Sign_Extend is
 	begin
-		-- Extend Sign Of Input In Output
-	    y <= std_logic_vector(resize(signed(x), y'length));
+	    SE_Output <= std_logic_vector(resize(signed(SE_Input), SE_Output'length));
 end behavior;
