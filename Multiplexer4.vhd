@@ -11,7 +11,7 @@ entity Multiplexer4 is
     );
 end Multiplexer4;
 
-architecture behavior of Multiplexer is
+architecture behavior of Multiplexer4 is
 begin
     process(a, b, c, d, sel)
     begin

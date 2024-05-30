@@ -1,50 +1,56 @@
 library IEEE;
 use IEEE.std_logic_1164.all;
-use IEEE.std_logic_arith.all;
-use IEEE.std_logic_unsigned.all;
+use IEEE.numeric_std.all;
 
 entity Data_Memory is
-	port (
-		address, write_data:   in  std_logic_vector (15 downto 0);
-		WD-D, MemRead, CLK:    in  std_logic;
-		read_data:             out std_logic_vector (15 downto 0)
-	);
+    port (
+        address, write_data: in std_logic_vector(15 downto 0);
+        MemWrite, MemRead, CLK: in std_logic;
+        read_data: out std_logic_vector(15 downto 0)
+    );
 end Data_Memory;
 
-architecture behavioral of Data_Memory is	  
+architecture behavioral of Data_Memory is
 
-type Memory_Array is array(0 to 15) of std_logic_vector (15 downto 0);
+    type Memory_Array is array(0 to 15) of std_logic_vector(15 downto 0);
 
-signal data_mem: Memory_Array := (
-    X"00000000", -- initialize data Data_Memory
-    X"00000000", -- &1
-    X"00000000", -- &2
-    X"00000000", -- &3
-    X"00000000", -- &4
-    X"00000000", -- &5
-    X"00000000", -- &6
-    X"00000000", -- &7
-    X"00000000", -- &8
-    X"00000000", -- &9
-    X"00000000", -- &10 
-    X"00000000", -- &11
-    X"00000000", -- &12
-    X"00000000", -- &13
-    X"00000000", -- &14
-    X"00000000", -- &15
+    signal data_mem: Memory_Array := (
+        X"0000", -- initialize data memory
+        X"0000", -- 1
+        X"0000", -- 2
+        X"0000", -- 3
+        X"0000", -- 4
+        X"0000", -- 5
+        X"0000", -- 6
+        X"0000", -- 7
+        X"0000", -- 8
+        X"0000", -- 9
+        X"0000", -- 10 
+        X"0000", -- 11
+        X"0000", -- 12
+        X"0000", -- 13
+        X"0000", -- 14
+        X"0000"  -- 15
     );
 
 begin
 
-    read_data <= data_mem(conv_integer(address(3 downto 0))) when MemRead = '1' else X"00000000";
+    process(address, MemRead)
+    begin
+        if (MemRead = '1') then
+            read_data <= data_mem(to_integer(unsigned(address(3 downto 0))));
+        else
+            read_data <= (others => '0');
+        end if;
+    end process;
 
-mem_process: process(address, write_data, CLK)
-begin
-	if (CLK = '0' and CLK'event) then
-		if (WD-D = '1') then
-			data_mem(conv_integer(address(3 downto 0))) <= write_data;
-		end if;
-	end if;
-end process mem_process;
+    process(CLK)
+    begin
+        if (rising_edge(CLK)) then
+            if (MemWrite = '1') then
+                data_mem(to_integer(unsigned(address(3 downto 0)))) <= write_data;
+            end if;
+        end if;
+    end process;
 
 end behavioral;
