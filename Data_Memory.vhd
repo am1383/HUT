@@ -36,13 +36,13 @@ signal data_mem: Memory_Array := (
 
 begin
 
-read_data <= data_mem(conv_integer(address(6 downto 2))) when MemRead = '1' else X"00000000";
+    read_data <= data_mem(conv_integer(address(3 downto 0))) when MemRead = '1' else X"00000000";
 
 mem_process: process(address, write_data, CLK)
 begin
 	if (CLK = '0' and CLK'event) then
-		if (MemWrite = '1') then
-			data_mem(conv_integer(address(6 downto 2))) <= write_data;
+		if (WD-D = '1') then
+			data_mem(conv_integer(address(3 downto 0))) <= write_data;
 		end if;
 	end if;
 end process mem_process;
