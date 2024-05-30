@@ -5,12 +5,12 @@ use IEEE.std_logic_unsigned.all;
 
 entity Adder is
 	port (
-		x,y: in  std_logic_vector(15 downto 0);
-		z: 	 out std_logic_vector(15 downto 0)
+		In1, In2:   in  std_logic_vector(15 downto 0);
+		Add_Output: out std_logic_vector(15 downto 0)
 	);
 end entity;
 
 architecture behavior of Adder is
 	begin
-		z <= x+y;
+		Add_Output <= In1 + In2;
 end behavior;

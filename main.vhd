@@ -14,11 +14,11 @@ architecture behavior of main is
 	signal instr_address: 		       std_logic_vector(15 downto 0); -- Address To Run
 	signal next_address:  		       std_logic_vector(15 downto 0); -- Next Address For PC
 	signal instruction:   	           std_logic_vector(15 downto 0); -- Current Addresss Instruction
-	signal read_data_1, read_data_2, write_data, Z.E_Immediate-Y, Z.E-Immediate-Z, S.E-Immediate, Shifted_Immediate, Shifted_Add, SevenShifted,SevenShifted2, alu_in_2, alu_result, last_instr_address, Add1_Result, Add2_Result, Add3_Result, PC_Result, D_Result, TwoComp_Result: std_logic_vector(15 downto 0):= "00000000000000000000000000000000";
+	signal read_data_1, read_data_2, write_data, Z.E_Immediate-Y, Z.E_Immediate-Z, S.E-Immediate, Shifted_Immediate, Shifted_Add, SevenShifted, SevenShifted2, alu_in_2, ALU_Result, last_instr_address, Add1_Result, Add2_Result, Add3_Result, PC_Result, D_Result, TwoComp_Result: std_logic_vector(15 downto 0):= "00000000000000000000000000000000";
 	signal Immediate-Y:                std_logic_vector(3 downto 0);
 	signal Immediate-Z:				   std_logic_vector(8 downto 0);
 	signal opcode:       		 	   std_logic_vector(2 downto 0);
-	signal rA-Y, rB-Y, rA-Z,write_reg: std_logic_vector(3 downto 0);
+	signal rA-Y, rB-Y, rA-Z, write_reg:std_logic_vector(3 downto 0);
 	signal alu_control_fuct:     	   std_logic_vector(3 downto 0);
 	signal WR-Sel, PC-Sel, mem_read, mem_to_reg, WD-D, alu_src, reg_write, alu_zero: std_logic:= '0';
 	signal alu_op, WD-Sel:             std_logic_vector(1 downto 0);
@@ -89,15 +89,17 @@ architecture behavior of main is
 		);
 	end component;
 	component Sign_Extend
+		generic (n: natural := 1);
 		port (
-			x: in  std_logic_vector(15 downto 0);
-			y: out std_logic_vector(15 downto 0)
+			SE_Input:  in  std_logic_vector(15 downto 0);
+			SE_Output: out std_logic_vector(15 downto 0)
 		);
 	end component;
     component Zero_Extend
+		generic (n: natural := 1);
         port (
-            x: in  std_logic_vector(7 downto 0);
-            y: out std_logic_vector(15 downto 0)
+            ZF_Input:  in  std_logic_vector(7 downto 0);
+            ZF_Output: out std_logic_vector(15 downto 0)
         );
     end component;
 	component ALU
@@ -105,7 +107,7 @@ architecture behavior of main is
 			in_1, in_2: std_logic_vector(15 downto 0);
 			alu_control_fuct: in  std_logic_vector(3 downto 0);
 			zero:			  out std_logic;
-			alu_result:       out std_logic_vector(15 downto 0)
+			ALU_Result:       out std_logic_vector(15 downto 0)
 		);
 	end component;
 	component ShiftOne
@@ -124,8 +126,8 @@ architecture behavior of main is
 		end component;
 	component Adder
 		port (
-			x,y: in  std_logic_vector(15 downto 0);
-			z:   out std_logic_vector(15 downto 0)
+			In1, In2:   in  std_logic_vector(15 downto 0);
+			Add_Output: out std_logic_vector(15 downto 0)
 		);		
 	end component;
 	component Data_Memory is
@@ -147,26 +149,26 @@ architecture behavior of main is
 
 	process(CLK)
 		begin
-		case s is
-			when running =>
-				en <= CLK;
-			when others =>
-				en <= '0';
-		end case;
-
-		if (CLK='1' and CLK'event) then
 			case s is
-				when loading =>
-					s <= running; -- give 1 cycle to load the instructions into memory
 				when running =>
-					if (instr_address > last_instr_address) then
-						s <= done; -- stop moving the pc after it has passed the last instruction
-						en <= '0';
-					end if;
+					en <= CLK;
 				when others =>
-					null;
+					en <= '0';
 			end case;
-		end if;
+
+			if (CLK='1' and CLK'event) then
+				case s is
+					when loading =>
+						s <= running; -- give 1 cycle to load the instructions into memory
+					when running =>
+						if (instr_address > last_instr_address) then
+							s <= done; -- stop moving the pc after it has passed the last instruction
+							en <= '0';
+						end if;
+					when others =>
+						null;
+				end case;
+			end if;
 	end process;
 
 	opcode      <= instruction(15 downto 13);
@@ -180,9 +182,9 @@ architecture behavior of main is
 
 	Instruction_Memory: Instruction_Memory port map (instr_address, instruction, last_instr_address);
 
-	Sign_Extend: Sign_Extend port map (Immediate-Z, S.E-Immediate);
+	Sign_Extend: Sign_Extend generic map(9) port map (Immediate-Z, S.E-Immediate);
 
-	CONTROL1: Controller port map (
+	Controller: Controller port map (
 		opcode => opcode,
 		PC-Sel => PC-Sel, 
 		jump => jump,
@@ -197,22 +199,48 @@ architecture behavior of main is
 
 	ALU_Controller: ALU_Controller port map (funct, alu_op, alu_control_fuct);
 
-	Zero_Extend: Zero_Extend port map (Immediate-Y, Z.E_Immediate-Y);
+	Zero_Extend: Zero_Extend generic map(4) port map (Immediate-Y, Z.E_Immediate-Y);
 
-	Zero_Extend: Zero_Extend port map (Immediate-Z, Z.E_Immediate-Z);
+	Zero_Extend: Zero_Extend generic map(9) port map (Immediate-Z, Z.E_Immediate-Z);
 
-	ALU: ALU port map (read_data_1, Z.E_Immediate, alu_control_fuct, alu_zero, alu_result);
+	ALU: ALU port map (read_data_1, Z.E_Immediate, alu_control_fuct, alu_zero, ALU_Result);
+
+	Register: Register port map (
+		CLK         => en,
+		reg_write   => reg_write,
+		read_reg_1  => rB-Y,
+		read_reg_2  => rA-Z,
+		write_reg   => write_reg, 
+		write_data  => write_data, 
+		read_data_1 => read_data_1, 
+		read_data_2 => read_data_2
+	);
+	
+	Memory: Instruction_Memory port map (
+		address    => SevenShifted2,
+		write_data => read_data_1,
+		WD-D       => WD-D,
+		MemRead    => mem_read,
+		CLK        => en,
+		read_data  => D_Result
+	);
 
 	ADD1: Adder port map (
-		x => instr_address,
-		y => "0000000000000010",
-		z => Add1_Result
+		In1        => instr_address,
+		In2        => "0000000000000010",
+		Add_Output => Add1_Result
+	);
+
+	ADD2: Adder port map (
+		In1 => read_data_2,
+		In2 => instr_address,
+		Add_Output => Add2_Result
 	);
 
 	ADD3: Adder port map (
-		x => Add2_Result,
-		y => S.E_Immediate,
-		z => Add3_Result
+		In1        => Add2_Result,
+		In2        => S.E_Immediate,
+		Add_Output => Add3_Result
 	);
 
 	ShiftOne: ShiftOne port map (
@@ -221,7 +249,7 @@ architecture behavior of main is
 	);
 
 	ShiftOne2: ShiftOne port map (
-		x => Z.E-Immediate_Z;
+		x => Z.E_Immediate_Z;
 		y => SevenShifted2
 	);
 
@@ -234,7 +262,6 @@ architecture behavior of main is
 		input  => read_data_2,
 		output => TwoComp_Result
 	);
-
 	-- Multiplexer Choose Between PC-Jump Instruction's
 	MUX1PCSEL: Multiplexer generic map(16) port map (
 		x => Add1_Result, 
@@ -252,31 +279,11 @@ architecture behavior of main is
 	-- Multiplexer Choose Between Register Write Data Instruction's
 	MUX3WDSel: Multiplexer4 generic map (16) port map (
 		a   => TwoComp_Result, 
-		b   => alu_result,
+		b   => ALU_Result,
 		c   => SevenShifted,  
 		d   => D_Result,
 		sel => WD-Sel,
 		z   => write_data
-	);
-
-	REG: Register port map (
-		CLK         => en,
-		reg_write   => reg_write,
-		read_reg_1  => rB-Y,
-		read_reg_2  => rA-Y,
-		write_reg   => write_reg, 
-		write_data  => write_data, 
-		read_data_1 => read_data_1, 
-		read_data_2 => read_data_2
-	);
-	
-	MEM: Instruction_Memory port map (
-		address    => SevenShifted2,
-		write_data => read_data_1,
-		WD-D       => WD-D,
-		MemRead    => mem_read,
-		CLK        => en,
-		read_data  => D_Result
 	);
 
 end behavior;
