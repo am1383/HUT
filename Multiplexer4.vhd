@@ -5,7 +5,7 @@ use IEEE.numeric_std.all;
 entity Multiplexer4 is 
     generic (n: natural := 1);
     port (
-        a, b, c, d: in  std_logic_vector(n-1 downto 0); -- Four data inputs
+        a, b, c, d: in  std_logic_vector(n-1 downto 0);  -- Four data inputs
         sel:        in  std_logic_vector(1 downto 0);    -- 2-bit selection line
         z:          out std_logic_vector(n-1 downto 0)   -- Output
     );
@@ -25,7 +25,7 @@ begin
             when "11" =>
                 z <= d;
             when others =>
-                z <= (others => '0'); -- Default case, can be modified as needed
+                z <= (others => '0');
         end case;
     end process;
 end behavior;

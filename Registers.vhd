@@ -44,8 +44,8 @@ begin
 
     process(CLK)
     begin
-        if rising_edge(CLK) then
-            if reg_write = '1' then
+        if (rising_edge(CLK)) then
+            if (reg_write = '1') then
                 reg_mem(to_integer(unsigned(write_reg))) <= write_data;
             end if;
         end if;

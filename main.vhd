@@ -11,17 +11,17 @@ end main;
 
 architecture behavior of main is
 
-	signal instr_address: 		       std_logic_vector(15 downto 0); -- Address To Run
-	signal next_address:  		       std_logic_vector(15 downto 0); -- Next Address For PC
-	signal instruction:   	           std_logic_vector(15 downto 0); -- Current Addresss Instruction
+	signal instr_address: 		        std_logic_vector(15 downto 0); -- Address To Run
+	signal next_address:  		        std_logic_vector(15 downto 0); -- Next Address For PC
+	signal instruction:   	            std_logic_vector(15 downto 0); -- Current Addresss Instruction
 	signal read_data_1, read_data_2, write_data, ZE_Immediate_Y, ZE_Immediate_Z, SE_Immediate, Shifted_Immediate, Shifted_Add, SevenShifted, SevenShifted2, alu_in_2, ALU_Result, last_instr_address, Add1_Result, Add2_Result, Add3_Result, PC_Result, D_Result, TwoComp_Result: std_logic_vector(15 downto 0):= "0000000000000000";
-	signal Immediate_Y:                std_logic_vector(3 downto 0);
-	signal Immediate_Z:				   std_logic_vector(8 downto 0);
-	signal opcode:       		 	   std_logic_vector(2 downto 0);
-	signal rA_Y, rB_Y, rA_Z, write_reg:std_logic_vector(3 downto 0);
-	signal alu_control_fuct:     	   std_logic_vector(1 downto 0);
+	signal Immediate_Y:                 std_logic_vector(3 downto 0);
+	signal Immediate_Z:				    std_logic_vector(8 downto 0);
+	signal opcode:       		 	    std_logic_vector(2 downto 0);
+	signal rA_Y, rB_Y, rA_Z, write_reg: std_logic_vector(3 downto 0);
+	signal alu_control_fuct:     	    std_logic_vector(1 downto 0);
 	signal WR_Sel, PC_Sel, mem_read, mem_to_reg, MemWrite, reg_write: std_logic:= '0';
-	signal alu_op, WD_Sel:             std_logic_vector(1 downto 0);
+	signal alu_op, WD_Sel:              std_logic_vector(1 downto 0);
 
 	 -- Check To Instruction Is Loaded
 	type state is (loading, running, done);
@@ -43,7 +43,7 @@ architecture behavior of main is
 			instruction, last_instr_address: out std_logic_vector (15 downto 0)
 		);
 	end component;
-	component Registers
+	component Register_File
 		port (
 			CLK:       						   in  std_logic;
 			reg_write: 						   in  std_logic;
@@ -199,18 +199,18 @@ architecture behavior of main is
 
 	ALUOne: ALU port map (read_data_1, ZE_Immediate_Y, alu_control_fuct, ALU_Result);
 	-- Multiplexer Choose Between PC-Jump Instruction's
-	MUX1PCSEL: Multiplexer generic map(16) port map (
+	MUX1: Multiplexer generic map(16) port map (
 		x => Add1_Result, 
 		y => Shifted_Add, 
 		s => PC_Sel,
 		z => next_address
 	);
 
-	RegisterOne: Registers port map (
+	REG: Register_File port map (
 		CLK         => en,
 		reg_write   => reg_write,
 		read_reg_1  => rB_Y,
-		read_reg_2  => rB_Y,                     		
+		read_reg_2  => rA_Y,                     		
 		write_reg   => write_reg, 
 		write_data  => write_data, 
 		read_data_1 => read_data_1, 
@@ -245,7 +245,7 @@ architecture behavior of main is
 		y => SevenShifted2
 	);
 
-	ShiftSE: ShiftSeven port map (
+	Shift3: ShiftSeven generic map(9) port map (
 		x => Immediate_Z,
 		y => SevenShifted
 	);
@@ -255,14 +255,14 @@ architecture behavior of main is
 		OutputTwo => TwoComp_Result
 	);
     -- Multiplexer Choose Between Write Registers Instruction's
-	MUX2WRSel: Multiplexer generic map(16) port map (
+	MUX2: Multiplexer generic map(4) port map (
 		x => rA_Y, 
 		y => rA_Z, 
 		s => WR_Sel,
 		z => write_reg
 	);
 	-- Multiplexer Choose Between Registers Write Data Instruction's
-	MUX3WDSel: Multiplexer4 generic map (16) port map (
+	MUX3: Multiplexer4 generic map (16) port map (
 		a   => TwoComp_Result, 
 		b   => ALU_Result,
 		c   => SevenShifted,  
