@@ -12,11 +12,11 @@ end Instruction_Memory;
 
 architecture behavioral of Instruction_Memory is
 
-    -- 128 byte instruction memory (32 rows * 4 bytes/row)
     type mem_array is array(0 to 15) of std_logic_vector(15 downto 0);
+    
     signal data_mem: mem_array := (
-        "0000000000000000", -- initialize data memory
-        "0000000000000000", -- mem 1
+        "0000000000000000", 
+        "0000000000000000", 
         "0000000000000000",
         "0000000000000000",
         "0000000000000000",
@@ -25,7 +25,7 @@ architecture behavioral of Instruction_Memory is
         "0000000000000000",
         "0000000000000000",
         "0000000000000000", 
-        "0000000000000000", -- mem 10 
+        "0000000000000000", 
         "0000000000000000", 
         "0000000000000000",
         "0000000000000000",
@@ -35,17 +35,16 @@ architecture behavioral of Instruction_Memory is
 
 begin
 
-    -- The process for reading the instructions into memory
     process
-        file file_pointer : text;
-        variable line_content : string(1 to 16);
-        variable line_num : line;
-        variable i: integer := 0;
-        variable j : integer := 0;
+        file file_pointer         : text;
+        variable line_content     : string(1 to 16);
+        variable line_num         : line;
+        variable i: integer       :=  0;
+        variable j : integer      :=  0;
         variable char : character := '0';
     begin
         -- Open instructions.txt and only read from it
-        file_open(file_pointer, "instructions.txt", read_mode);
+        file_open(file_pointer, "MIPS.txt", read_mode);
         -- Read until the end of the file is reached  
         while not endfile(file_pointer) loop
             readline(file_pointer, line_num); -- Read a line from the file
@@ -61,7 +60,7 @@ begin
             end loop;
             i := i + 1;
         end loop;
-        if i > 0 then
+        if (i > 0) then
             last_instr_address <= std_logic_vector(to_unsigned((i-1)*2, last_instr_address'length));
         else
             last_instr_address <= "0000000000000000";
@@ -72,6 +71,6 @@ begin
     end process;
 
     -- Since the registers are in multiples of 2 bytes, we can ignore the last bit
-    instruction <= data_mem(to_integer(unsigned(read_address(15 downto 1))));
+    instruction <= data_mem(to_integer(unsigned(read_address(15 downto 0))));
 
 end behavioral;
