@@ -4,9 +4,9 @@ use IEEE.numeric_std.all;
 
 entity Data_Memory is
     port (
-        address, write_data: in std_logic_vector(15 downto 0);
+        address, write_data:    in std_logic_vector(15 downto 0);
         MemWrite, MemRead, CLK: in std_logic;
-        read_data: out std_logic_vector(15 downto 0)
+        read_data:              out std_logic_vector(15 downto 0)
     );
 end Data_Memory;
 

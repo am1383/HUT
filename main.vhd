@@ -19,8 +19,8 @@ architecture behavior of main is
 	signal Immediate_Z:				   std_logic_vector(8 downto 0);
 	signal opcode:       		 	   std_logic_vector(2 downto 0);
 	signal rA_Y, rB_Y, rA_Z, write_reg:std_logic_vector(3 downto 0);
-	signal alu_control_fuct:     	   std_logic_vector(3 downto 0);
-	signal WR_Sel, PC_Sel, mem_read, mem_to_reg, MemWrite, alu_src, reg_write, alu_zero: std_logic:= '0';
+	signal alu_control_fuct:     	   std_logic_vector(1 downto 0);
+	signal WR_Sel, PC_Sel, mem_read, mem_to_reg, MemWrite, reg_write: std_logic:= '0';
 	signal alu_op, WD_Sel:             std_logic_vector(1 downto 0);
 
 	 -- Check To Instruction Is Loaded
@@ -84,7 +84,7 @@ architecture behavior of main is
 	component ALU_Controller
 		port (
 			alu_op:           in  std_logic_vector(1 downto 0);
-			alu_control_fuct: out std_logic_vector(3 downto 0)
+			alu_control_fuct: out std_logic_vector(1 downto 0)
 		);
 	end component;
 	component Sign_Extend
@@ -104,8 +104,7 @@ architecture behavior of main is
 	component ALU
 		port (
 			in_1, in_2: 	  std_logic_vector(15 downto 0);
-			alu_control_fuct: in  std_logic_vector(3 downto 0);
-			zero:			  out std_logic;
+			alu_control_fuct: in  std_logic_vector(1 downto 0);
 			ALU_Result:       out std_logic_vector(15 downto 0)
 		);
 	end component;
@@ -198,7 +197,7 @@ architecture behavior of main is
 
 	ZeroEx2: Zero_Extend generic map(9) port map (Immediate_Z, ZE_Immediate_Z);
 
-	ALUOne: ALU port map (read_data_1, ZE_Immediate_Y, alu_control_fuct, alu_zero, ALU_Result);
+	ALUOne: ALU port map (read_data_1, ZE_Immediate_Y, alu_control_fuct, ALU_Result);
 	-- Multiplexer Choose Between PC-Jump Instruction's
 	MUX1PCSEL: Multiplexer generic map(16) port map (
 		x => Add1_Result, 

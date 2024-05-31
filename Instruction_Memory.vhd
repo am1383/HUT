@@ -5,7 +5,7 @@ use std.textio.all; -- Required for reading a file
 
 entity Instruction_Memory is
     port (
-        read_address: in  std_logic_vector(15 downto 0);
+        read_address:                    in  std_logic_vector(15 downto 0);
         instruction, last_instr_address: out std_logic_vector(15 downto 0)
     );
 end Instruction_Memory;

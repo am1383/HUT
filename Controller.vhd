@@ -4,9 +4,9 @@ use IEEE.numeric_std.all;
 
 entity Controller is
     port (
-        opcode:    in  std_logic_vector(2 downto 0);
+        opcode:                              in  std_logic_vector(2 downto 0);
         PC_Sel, WR_Sel, MemWrite, reg_write: out std_logic;
-        alu_op, WD_Sel: out std_logic_vector(1 downto 0)
+        alu_op, WD_Sel:                      out std_logic_vector(1 downto 0)
     );
 end Controller;
 
