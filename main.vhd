@@ -1,7 +1,7 @@
 library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.std_logic_arith.all;
-use IEEE.std_logic_unsigned.all;
+use IEEE.numeric_std.all;
 
 entity main is
 	port(
@@ -9,7 +9,7 @@ entity main is
 	);
 end main;
 
-architecture behavior of main is
+architecture Behavior of main is
 
 	signal instr_address: 		        std_logic_vector(15 downto 0); -- Address To Run
 	signal next_address:  		        std_logic_vector(15 downto 0); -- Next Address For PC
@@ -28,7 +28,7 @@ architecture behavior of main is
 	signal s: state:= loading;
 
 	-- Enable Signal
-	signal en: std_logic:= '0';
+	signal en: std_logic:= '1';
 
 	component PC
 		port (
@@ -135,9 +135,8 @@ architecture behavior of main is
 	end component;
 	component Decoder is
 		Port ( 
-			input  : in  std_logic_vector (3 downto 0);
-			enable : in  std_logic;
-			output : out std_logic_vector (15 downto 0)
+			Input  : in  std_logic_vector (3 downto 0);
+			Output : out std_logic_vector (15 downto 0)
 		);
 	end component;
 
@@ -278,4 +277,4 @@ architecture behavior of main is
 		read_data  => D_Result
 	);
 	
-end behavior;
+end Behavior;

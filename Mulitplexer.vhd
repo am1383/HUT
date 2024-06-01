@@ -11,7 +11,7 @@ entity Multiplexer is
 	);
 end Multiplexer;
 
-architecture behavior of Multiplexer is
+architecture Behavior of Multiplexer is
 	begin
 	    z <= x when (s='0') else y;
-end behavior;
+end Behavior;
