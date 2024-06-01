@@ -10,7 +10,7 @@ entity Zero_Extend is
 	);
 end Zero_Extend;
 
-architecture behavior of Zero_Extend is
+architecture Behavior of Zero_Extend is
 	begin
 	    ZF_Output <= std_logic_vector(resize(unsigned(ZF_Input), ZF_Output'length));
-end behavior;
+end Behavior;

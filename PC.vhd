@@ -1,6 +1,6 @@
 library IEEE;
 use IEEE.std_logic_1164.all;
-use IEEE.std_logic_unsigned.ALL;
+use IEEE.std_logic_unsigned.all;
 
 entity PC is
 	port(
@@ -10,7 +10,7 @@ entity PC is
 	);
 end PC;
 
-architecture behavior of PC is
+architecture Behavior of PC is
 
 	signal address: std_logic_vector(15 downto 0):= "0000000000000000";
 
@@ -24,4 +24,4 @@ architecture behavior of PC is
                 end if;
         end process;
 
-end behavior;
+end Behavior;

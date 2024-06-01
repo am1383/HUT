@@ -10,7 +10,7 @@ entity Sign_Extend is
 	);
 end Sign_Extend;
 
-architecture behavior of Sign_Extend is
+architecture Behavior of Sign_Extend is
 	begin
 	    SE_Output <= std_logic_vector(resize(signed(SE_Input), SE_Output'length));
-end behavior;
+end Behavior;

@@ -19,8 +19,8 @@ architecture behavior of ALU is
 
 	begin
 
-		ALU_result <= in_1 + in_2  when(ALU_control_fuct=add)      else
-					  in_1 - in_2  when(ALU_control_fuct=subtract) else
-				      in_1 or in_2 when(ALU_control_fuct=or_op);
+		ALU_result <= in_1  +  in_2  when(ALU_control_fuct=add)      else
+					  in_1  -  in_2  when(ALU_control_fuct=subtract) else
+				      in_1  or in_2  when(ALU_control_fuct=or_op);
 
 end behavior;

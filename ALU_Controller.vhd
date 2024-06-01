@@ -11,9 +11,9 @@ end ALU_Controller;
 
 architecture behavior of ALU_Controller is
 
-	signal add: 		       std_logic_vector(1 downto 0):= "01";
-	signal subtract: 		   std_logic_vector(1 downto 0):= "10";
-	signal or_op: 		 	   std_logic_vector(1 downto 0):= "11";
+	signal add: 		std_logic_vector(1 downto 0):= "01";
+	signal subtract: 	std_logic_vector(1 downto 0):= "10";
+	signal or_op: 	    std_logic_vector(1 downto 0):= "11";
 
 	begin
 

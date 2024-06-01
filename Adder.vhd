@@ -10,7 +10,7 @@ entity Adder is
 	);
 end entity;
 
-architecture behavior of Adder is
+architecture Behavior of Adder is
 	begin
 		Add_Output <= In1 + In2;
-end behavior;
+end Behavior;

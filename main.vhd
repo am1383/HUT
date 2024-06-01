@@ -1,7 +1,7 @@
 library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.std_logic_arith.all;
-use IEEE.std_logic_unsigned.ALL;
+use IEEE.std_logic_unsigned.all;
 
 entity main is
 	port(
@@ -109,17 +109,15 @@ architecture behavior of main is
 		);
 	end component;
 	component ShiftOne
-		generic (n1: natural:= 16; n2: natural:= 16; k: natural:= 2);
 		port (
-			x: in  std_logic_vector(n1-1 downto 0);
-			y: out std_logic_vector(n2-1 downto 0)
+			x: in  std_logic_vector(15 downto 0);
+			y: out std_logic_vector(15 downto 0)
 		);
 	end component;
 	component ShiftSeven 
-		generic (n1: natural:= 16; n2: natural:= 16; k: natural:=7);
 		port(
-			x: in  std_logic_vector(n1-1 downto 0);
-			y: out std_logic_vector(n2-1 downto 0)
+			x: in  std_logic_vector(8 downto 0);
+			y: out std_logic_vector(15 downto 0)
 		);
 		end component;
 	component Adder
@@ -224,8 +222,8 @@ architecture behavior of main is
 	);
 
 	ADD2: Adder port map (
-		In1 => read_data_1,
-		In2 => instr_address,
+		In1        => read_data_1,
+		In2        => instr_address,
 		Add_Output => Add2_Result
 	);
 
@@ -245,7 +243,7 @@ architecture behavior of main is
 		y => SevenShifted2
 	);
 
-	Shift3: ShiftSeven generic map(9) port map (
+	Shift3: ShiftSeven port map (
 		x => Immediate_Z,
 		y => SevenShifted
 	);
