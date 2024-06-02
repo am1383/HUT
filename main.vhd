@@ -14,11 +14,11 @@ architecture Behavior of main is
 	signal instr_address: 		        std_logic_vector(15 downto 0); -- Address To Run
 	signal next_address:  		        std_logic_vector(15 downto 0); -- Next Address For PC
 	signal instruction:   	            std_logic_vector(15 downto 0); -- Current Addresss Instruction
-	signal read_data_1, read_data_2, write_data, ZE_Immediate_Y, ZE_Immediate_Z, SE_Immediate, Shifted_Immediate, Shifted_Add, SevenShifted, SevenShifted2, alu_in_2, ALU_Result, last_instr_address, Add1_Result, Add2_Result, Add3_Result, PC_Result, D_Result, TwoComp_Result: std_logic_vector(15 downto 0):= "0000000000000000";
+	signal read_data_1, read_data_2, write_data, ZE_Immediate_Y, ZE_Immediate_Z, SE_Immediate, Shifted_Immediate, Shifted_Add, SevenShifted, SevenShifted2, alu_in_2, ALU_Result, ALU_Result_2, last_instr_address, Add1_Result, Add2_Result, Add3_Result, PC_Result, D_Result, TwoComp_Result: std_logic_vector(15 downto 0):= "0000000000000000";
 	signal Immediate_Y:                 std_logic_vector(3 downto 0);
 	signal Immediate_Z:				    std_logic_vector(8 downto 0);
 	signal opcode:       		 	    std_logic_vector(2 downto 0);
-	signal rA_Y, rB_Y, rA_Z, write_reg: std_logic_vector(3 downto 0);
+	signal rA_Y, rB_Y, rA_Z, write_reg, Decoder_Result : std_logic_vector(3 downto 0);
 	signal alu_control_fuct:     	    std_logic_vector(1 downto 0);
 	signal WR_Sel, PC_Sel, mem_read, mem_to_reg, MemWrite, reg_write: std_logic:= '0';
 	signal alu_op, WD_Sel:              std_logic_vector(1 downto 0);
@@ -182,12 +182,12 @@ architecture Behavior of main is
 	InstructionMEM: Instruction_Memory port map (instr_address, instruction, last_instr_address);
 
 	Control: Controller port map (
-		opcode => opcode,
-		PC_Sel => PC_Sel, 
-		WR_Sel => WR_Sel,
-		MemWrite => MemWrite,
+		opcode    => opcode,
+		PC_Sel    => PC_Sel, 
+		WR_Sel    => WR_Sel,
+		MemWrite  => MemWrite,
 		reg_write => reg_write,
-		alu_op => alu_op 
+		alu_op    => alu_op 
 	);
 
 	SignEx: Sign_Extend generic map(9) port map (Immediate_Z, SE_Immediate);
@@ -199,6 +199,7 @@ architecture Behavior of main is
 	ZeroEx2: Zero_Extend generic map(9) port map (Immediate_Z, ZE_Immediate_Z);
 
 	ALUOne: ALU port map (read_data_1, ZE_Immediate_Y, alu_control_fuct, ALU_Result);
+
 	-- Multiplexer Choose Between PC-Jump Instruction's
 	MUX1: Multiplexer generic map(16) port map (
 		x => Add1_Result, 
@@ -216,6 +217,11 @@ architecture Behavior of main is
 		write_data  => write_data, 
 		read_data_1 => read_data_1, 
 		read_data_2 => read_data_2
+	);
+
+	DEC: Decoder port map (
+		input   => rB_Y,
+		subset1 => Decoder_Result 
 	);
 
 	ADD1: Adder port map (

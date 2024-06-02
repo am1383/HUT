@@ -14,16 +14,21 @@ entity Decoder is
 end Decoder;
 
 architecture Behavioral of Decoder is
-begin
-    process(input)
+    signal internal_output: std_logic_vector(15 downto 0);
     begin
-            output <= (others => '0');
-            output(to_integer(unsigned(input))) <= '1';
-            
-        -- Assign subsets
-        subset0 <= output(3 downto 0);
-        subset1 <= output(7 downto 4);
-        subset2 <= output(11 downto 8);
-        subset3 <= output(15 downto 12);
-    end process;
+        process(input)
+            begin
+
+                internal_output <= (others => '0');
+                internal_output(to_integer(unsigned(input))) <= '1';
+    
+        end process;
+
+    -- Assign internal signals to outputs
+    output <= internal_output;
+    subset0 <= internal_output(3 downto 0);
+    subset1 <= internal_output(7 downto 4);
+    subset2 <= internal_output(11 downto 8);
+    subset3 <= internal_output(15 downto 12);
+    
 end Behavioral;

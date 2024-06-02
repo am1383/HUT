@@ -11,7 +11,7 @@ entity Instruction_Memory is
     );
 end Instruction_Memory;
 
-architecture behavioral of Instruction_Memory is
+architecture Behavioral of Instruction_Memory is
 
     type mem_array is array(0 to 15) of std_logic_vector(15 downto 0);
 
@@ -61,4 +61,4 @@ begin
 
     instruction <= data_mem(to_integer(unsigned(read_address(15 downto 1))));
 
-end behavioral;
+end Behavioral;

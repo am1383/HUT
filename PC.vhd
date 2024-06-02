@@ -13,9 +13,8 @@ end PC;
 architecture Behavior of PC is
 
 	signal address: std_logic_vector(15 downto 0):= "0000000000000000";
-
+    
 	begin
-
         process(CLK)
             begin
                 current_address <= address;
