@@ -28,7 +28,7 @@ architecture Behavior of main is
 	signal s: state:= loading;
 
 	-- Enable Signal
-	signal en: std_logic:= '1';
+	signal en: std_logic:= '0';
 
 	component PC
 		port (
@@ -134,9 +134,13 @@ architecture Behavior of main is
 		);
 	end component;
 	component Decoder is
-		Port ( 
-			Input  : in  std_logic_vector (3 downto 0);
-			Output : out std_logic_vector (15 downto 0)
+		port (
+			input:    in  std_logic_vector(3 downto 0);
+			output:   out std_logic_vector(15 downto 0);
+			subset0:  out std_logic_vector(3 downto 0);
+			subset1:  out std_logic_vector(3 downto 0);
+			subset2:  out std_logic_vector(3 downto 0);
+			subset3:  out std_logic_vector(3 downto 0)
 		);
 	end component;
 
@@ -216,7 +220,7 @@ architecture Behavior of main is
 
 	ADD1: Adder port map (
 		In1        => instr_address,
-		In2        => "0000000000000010",
+		In2        => "0000000000000010", -- 16 Bit Proccessor 2+ Bit Program Counter
 		Add_Output => Add1_Result
 	);
 
