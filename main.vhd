@@ -184,6 +184,7 @@ architecture Behavior of main is
 	Control: Controller port map (
 		opcode    => opcode,
 		PC_Sel    => PC_Sel, 
+		WD_Sel    => WD_Sel,
 		WR_Sel    => WR_Sel,
 		MemWrite  => MemWrite,
 		reg_write => reg_write,

@@ -20,5 +20,5 @@ begin
     reg_write <= '1'  when opcode = "000" else '0'  when opcode = "001" else '1'  when opcode = "010" else '0'  when opcode = "011" else '0'  when opcode = "100" else '1'  when opcode = "101" else '0'  when opcode = "110" else '0';
     alu_op    <= "10" when opcode = "000" else "00" when opcode = "001" else "10" when opcode = "010" else "11" when opcode = "011" else "00" when opcode = "100" else "00" when opcode = "101" else "00" when opcode = "110" else "00";
     WD_Sel    <= "00" when opcode = "000" else "00" when opcode = "001" else "01" when opcode = "010" else "11" when opcode = "011" else "00" when opcode = "100" else "00" when opcode = "101" else "00" when opcode = "110" else "00";
-        
+     
 end behavior;
