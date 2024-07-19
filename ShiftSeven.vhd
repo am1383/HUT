@@ -10,9 +10,9 @@ entity ShiftSeven is
 end entity;
 
 architecture Behavior of ShiftSeven is
-	signal temp: std_logic_vector(15 downto 0);
+	signal tempShiftSeven: std_logic_vector(15 downto 0);
 
 	begin
-	    temp <= std_logic_vector(resize(unsigned(x), 16));
-	    y    <= std_logic_vector(shift_left(signed(temp), 7));
+	    tempShiftSeven <= std_logic_vector(resize(unsigned(x), 16));
+	    y              <= std_logic_vector(shift_left(signed(tempShiftSeven), 7));
 end Behavior;

@@ -154,7 +154,7 @@ architecture Behavior of main is
 		begin
 			case s is
 				when running =>
-					en <= CLK;
+					en <= '1';
 				when others =>
 					en <= '0';
 			end case;
@@ -162,10 +162,10 @@ architecture Behavior of main is
 			if (CLK='1' and CLK'event) then
 				case s is
 					when loading =>
-						s <= running; -- give 1 cycle to load the instructions into memory
+						s <= running;
 					when running =>
 						if (instr_address > last_instr_address) then
-							s <= done; -- stop moving the pc after it has passed the last instruction
+							s <= done;
 							en <= '0';
 						end if;
 					when others =>
@@ -206,7 +206,7 @@ architecture Behavior of main is
 
 	ALUOne: ALU generic map(16) port map (read_data_1, ZE_Immediate_Y, alu_control_fuct, ALU_Result);
 
-	-- Multiplexer Choose Between PC-Jump Instruction's
+	-- PC-Jump Instruction's
 	MUX1: Multiplexer generic map(16) port map (
 		x => Add1_Result, 
 		y => Shifted_Add, 
@@ -214,12 +214,20 @@ architecture Behavior of main is
 		z => next_address
 	);
 
+	-- Multiplexer Choose Between Write Registers Instruction's
+	MUX2: Multiplexer generic map(4) port map (
+		x => rA_Y, 
+		y => rA_Z, 
+		s => WR_Sel,
+		z => write_reg
+	);
+
 	REG: Register_File port map (
 		CLK         => en,
 		reg_write   => reg_write,
 		read_reg_1  => rB_Y,
 		read_reg_2  => rA_Y,                     		
-		write_reg   => write_reg, 
+		write_reg   => write_reg,
 		write_data  => write_data, 
 		read_data_1 => read_data_1, 
 		read_data_2 => read_data_2
@@ -238,7 +246,7 @@ architecture Behavior of main is
 
 	ADD1: Adder port map (
 		In1        => instr_address,
-		In2        => "0000000000000010", -- 16 Bit Proccessor 2+ Bit Program Counter
+		In2        => "0000000000000010", -- 2+ Bit Program Counter
 		Add_Output => Add1_Result
 	);
 
@@ -273,13 +281,7 @@ architecture Behavior of main is
 		InputTwo  => read_data_2,
 		OutputTwo => TwoComp_Result
 	);
-    -- Multiplexer Choose Between Write Registers Instruction's
-	MUX2: Multiplexer generic map(4) port map (
-		x => rA_Y, 
-		y => rA_Z, 
-		s => WR_Sel,
-		z => write_reg
-	);
+
 	-- Multiplexer Choose Between Registers Write Data Instruction's
 	MUX3: Multiplexer5 generic map (16) port map (
 		a   => TwoComp_Result, 

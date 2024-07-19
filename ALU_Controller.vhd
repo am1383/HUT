@@ -17,7 +17,7 @@ architecture behavior of ALU_Controller is
 
 	begin
 
-		ALU_control_fuct <= add when(ALU_op="00") else
+		ALU_control_fuct <= add      when(ALU_op="00") else
 							subtract when(ALU_op="01") else
-							or_op when(ALU_op="10");
+							or_op    when(ALU_op="10");
 end behavior;

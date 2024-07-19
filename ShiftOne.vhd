@@ -10,9 +10,9 @@ entity ShiftOne is
 end entity;
 
 architecture Behavior of ShiftOne is
-	signal temp: std_logic_vector(15 downto 0);
+	signal tempShiftOne: std_logic_vector(15 downto 0);
 
 	begin
-	    temp <= std_logic_vector(resize(unsigned(x), 16));
-	    y    <= std_logic_vector(shift_left(signed(temp), 1));
+	    tempShiftOne <= std_logic_vector(resize(unsigned(x), 16));
+	    y            <= std_logic_vector(shift_left(signed(tempShiftOne), 1));
 end Behavior;

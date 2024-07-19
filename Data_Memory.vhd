@@ -10,27 +10,13 @@ entity Data_Memory is
     );
 end Data_Memory;
 
-architecture behavioral of Data_Memory is
+architecture Behavioral of Data_Memory is
 
     type Memory_Array is array(0 to 15) of std_logic_vector(15 downto 0);
 
     signal data_mem: Memory_Array := (
-        X"0001",
-        X"0000",
-        X"0001", 
-        X"0100", 
-        X"0000", 
-        X"0000",
-        X"0000", 
-        X"0000", 
-        X"0000", 
-        X"0000", 
-        X"0000",  
-        X"0000", 
-        X"0000", 
-        X"0000", 
-        X"0000", 
-        X"0000"  
+        X"1234", X"5678", X"9ABC", X"DEF0", X"1357", X"2468", X"369B", X"ACE1",
+        X"FEDC", X"BA98", X"7654", X"3210", X"0FED", X"CBA9", X"8765", X"4321"
     );
 
 begin
@@ -53,4 +39,4 @@ begin
         end if;
     end process;
 
-end behavioral;
+end Behavioral;

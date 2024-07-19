@@ -31,7 +31,7 @@ begin
     read_data_1 <= reg_mem(to_integer(unsigned(read_reg_1)));
     read_data_2 <= reg_mem(to_integer(unsigned(read_reg_2)));
 
-    process(CLK)
+    process(CLK, reg_write)
     begin
 
         if (rising_edge(CLK)) then
