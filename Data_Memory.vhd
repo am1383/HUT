@@ -15,9 +15,9 @@ architecture behavioral of Data_Memory is
     type Memory_Array is array(0 to 15) of std_logic_vector(15 downto 0);
 
     signal data_mem: Memory_Array := (
+        X"0001",
         X"0000",
-        X"0000",
-        X"0000", 
+        X"0001", 
         X"0100", 
         X"0000", 
         X"0000",

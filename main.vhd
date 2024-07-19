@@ -4,24 +4,26 @@ use IEEE.std_logic_arith.all;
 use IEEE.numeric_std.all;
 
 entity main is
-	port(
+	port (
 		CLK: in std_logic
 	);
 end main;
 
 architecture Behavior of main is
 
-	signal instr_address: 		        std_logic_vector(15 downto 0); -- Address To Run
-	signal next_address:  		        std_logic_vector(15 downto 0); -- Next Address For PC
-	signal instruction:   	            std_logic_vector(15 downto 0); -- Current Addresss Instruction
-	signal read_data_1, read_data_2, write_data, ZE_Immediate_Y, ZE_Immediate_Z, SE_Immediate, Shifted_Immediate, Shifted_Add, SevenShifted, SevenShifted2, alu_in_2, ALU_Result, ALU_Result_2, last_instr_address, Add1_Result, Add2_Result, Add3_Result, PC_Result, D_Result, TwoComp_Result: std_logic_vector(15 downto 0):= "0000000000000000";
-	signal Immediate_Y:                 std_logic_vector(3 downto 0);
-	signal Immediate_Z:				    std_logic_vector(8 downto 0);
-	signal opcode:       		 	    std_logic_vector(2 downto 0);
-	signal rA_Y, rB_Y, rA_Z, write_reg, Decoder_Result : std_logic_vector(3 downto 0);
-	signal alu_control_fuct:     	    std_logic_vector(1 downto 0);
+	signal instr_address: 		                         std_logic_vector(15 downto 0); -- Address To Run
+	signal next_address:  		                         std_logic_vector(15 downto 0); -- Next Address For PC
+	signal instruction:   	                             std_logic_vector(15 downto 0); -- Current Addresss Instruction
+	signal read_data_1, read_data_2, write_data, ZE_Immediate_Y, ZE_Immediate_Z, ZE_Decoder_Result, SE_Immediate, Shifted_Immediate, Shifted_Add, SevenShifted, ZE_NumberOne, SevenShifted2, alu_in_2, ALU_Result, ALU_Result_2, last_instr_address, Add1_Result, Add2_Result, Add3_Result, PC_Result, D_Result, TwoComp_Result: std_logic_vector(15 downto 0):= "0000000000000000";
+	signal Immediate_Y:                                  std_logic_vector(3 downto 0);
+	signal Immediate_Z:				                     std_logic_vector(8 downto 0);
+	signal opcode, WD_Sel:       		                 std_logic_vector(2 downto 0);
+	signal rA_Y, rB_Y, rA_Z, write_reg:                  std_logic_vector(3 downto 0);
+	signal alu_control_fuct:     	                     std_logic_vector(1 downto 0);
 	signal WR_Sel, PC_Sel, mem_read, mem_to_reg, MemWrite, reg_write: std_logic:= '0';
-	signal alu_op, WD_Sel:              std_logic_vector(1 downto 0);
+	signal alu_op:                                       std_logic_vector(1 downto 0);
+	signal NumberOne:                                    std_logic_vector(3 downto 0) := "0001";
+	signal Decoder_Result:                               std_logic_vector(3 downto 0) := "0000";
 
 	 -- Check To Instruction Is Loaded
 	type state is (loading, running, done);
@@ -54,9 +56,10 @@ architecture Behavior of main is
 	end component;
 	component Controller
 		port (
-			opcode:                              in  std_logic_vector(2 downto 0);
-			PC_Sel, WR_Sel, MemWrite, reg_write: out std_logic;
-			alu_op, WD_Sel:                      out std_logic_vector(1 downto 0)
+			opcode:                                         in  std_logic_vector(2 downto 0);
+			PC_Sel, WR_Sel, MemWrite, reg_write, mem_read:  out std_logic;
+			WD_Sel:                                         out std_logic_vector(2 downto 0);
+			alu_op:                                         out std_logic_vector(1 downto 0)
 		);
 	end component;
 	component Multiplexer
@@ -67,12 +70,12 @@ architecture Behavior of main is
 				z:    out std_logic_vector(n-1 downto 0)
 			);
 	end component;
-	component Multiplexer4
+	component Multiplexer5
 		generic (n: natural := 1);
 			port (
-				a, b, c, d: in  std_logic_vector(n-1 downto 0); -- Four data inputs
-				sel:        in  std_logic_vector(1 downto 0);    -- 2-bit selection line
-				z:          out std_logic_vector(n-1 downto 0)   -- Output
+				a, b, c, d, e : in  std_logic_vector(n-1 downto 0);  -- Four data inputs
+				sel:            in  std_logic_vector(2 downto 0);    -- 3-bit selection line
+				z:              out std_logic_vector(n-1 downto 0)   -- Output
 			);
 		end component;
 	component Two_Complement
@@ -102,10 +105,11 @@ architecture Behavior of main is
         );
     end component;
 	component ALU
+		generic (n: natural := 1);
 		port (
-			in_1, in_2: 	  std_logic_vector(15 downto 0);
+			in_1, in_2: 	  std_logic_vector(n-1 downto 0);
 			alu_control_fuct: in  std_logic_vector(1 downto 0);
-			ALU_Result:       out std_logic_vector(15 downto 0)
+			ALU_Result:       out std_logic_vector(n-1 downto 0)
 		);
 	end component;
 	component ShiftOne
@@ -187,6 +191,7 @@ architecture Behavior of main is
 		WD_Sel    => WD_Sel,
 		WR_Sel    => WR_Sel,
 		MemWrite  => MemWrite,
+		mem_read  => mem_read,
 		reg_write => reg_write,
 		alu_op    => alu_op 
 	);
@@ -199,7 +204,7 @@ architecture Behavior of main is
 
 	ZeroEx2: Zero_Extend generic map(9) port map (Immediate_Z, ZE_Immediate_Z);
 
-	ALUOne: ALU port map (read_data_1, ZE_Immediate_Y, alu_control_fuct, ALU_Result);
+	ALUOne: ALU generic map(16) port map (read_data_1, ZE_Immediate_Y, alu_control_fuct, ALU_Result);
 
 	-- Multiplexer Choose Between PC-Jump Instruction's
 	MUX1: Multiplexer generic map(16) port map (
@@ -222,8 +227,14 @@ architecture Behavior of main is
 
 	DEC: Decoder port map (
 		input   => rB_Y,
-		subset1 => Decoder_Result 
+		subset1 => Decoder_Result
 	);
+
+	ZeroEx5: Zero_Extend generic map(4) port map (Decoder_Result, ZE_Decoder_Result);
+
+	ZeroEx6: Zero_Extend generic map(4) port map (NumberOne, ZE_NumberOne);
+
+	ALUTwo: ALU generic map(16) port map (ZE_Decoder_Result, ZE_NumberOne, alu_control_fuct, ALU_Result_2);
 
 	ADD1: Adder port map (
 		In1        => instr_address,
@@ -270,11 +281,12 @@ architecture Behavior of main is
 		z => write_reg
 	);
 	-- Multiplexer Choose Between Registers Write Data Instruction's
-	MUX3: Multiplexer4 generic map (16) port map (
+	MUX3: Multiplexer5 generic map (16) port map (
 		a   => TwoComp_Result, 
 		b   => ALU_Result,
 		c   => SevenShifted,  
 		d   => D_Result,
+		e   => ALU_Result_2,
 		sel => WD_Sel,
 		z   => write_data
 	);

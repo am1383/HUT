@@ -15,7 +15,7 @@ architecture Behavioral of Instruction_Memory is
     type mem_array is array(0 to 15) of std_logic_vector(15 downto 0);
 
     signal data_mem: mem_array := (
-        "0000001000010001", 
+        "0010000000010100", 
         "0000000000000001",
         "0000000000000010",
         "0000000000000011", 
