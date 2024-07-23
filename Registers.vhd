@@ -31,14 +31,12 @@ begin
     read_data_1 <= reg_mem(to_integer(unsigned(read_reg_1)));
     read_data_2 <= reg_mem(to_integer(unsigned(read_reg_2)));
 
-    process(CLK, reg_write)
+    process(CLK)
     begin
-
         if (rising_edge(CLK)) then
             if (reg_write = '1') then
                 reg_mem(to_integer(unsigned(write_reg))) <= write_data;
             end if;
         end if;
     end process;
-
 end Behavior;

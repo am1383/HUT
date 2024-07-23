@@ -5,9 +5,9 @@ use IEEE.numeric_std.all;
 entity Multiplexer5 is 
     generic (n: natural := 1);
     port (
-        a, b, c, d, e:  in  std_logic_vector(n-1 downto 0);  -- Four data inputs
-        sel:            in  std_logic_vector(2 downto 0);    -- 3-bit selection line
-        z:              out std_logic_vector(n-1 downto 0)   -- Output
+        a, b, c, d, e:  in  std_logic_vector(n-1 downto 0);  
+        sel:            in  std_logic_vector(2 downto 0);   
+        z:              out std_logic_vector(n-1 downto 0)   
     );
 end Multiplexer5;
 

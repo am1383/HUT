@@ -7,7 +7,7 @@ entity ALU is
 	generic (n: natural := 1);
 	port (
 		in_1, in_2:           std_logic_vector(n-1 downto 0);
-		ALU_control_fuct: in  std_logic_vector(1   downto 0);
+		ALU_control_fuct: in  std_logic_vector(1 downto 0);
 		ALU_result:       out std_logic_vector(n-1 downto 0)
 	);
 end ALU;

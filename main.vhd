@@ -4,16 +4,13 @@ use IEEE.std_logic_arith.all;
 use IEEE.numeric_std.all;
 
 entity main is
-	port (
-		CLK: in std_logic
-	);
 end main;
 
 architecture Behavior of main is
 
 	signal instr_address: 		                         std_logic_vector(15 downto 0); -- Address To Run
 	signal next_address:  		                         std_logic_vector(15 downto 0); -- Next Address For PC
-	signal instruction:   	                             std_logic_vector(15 downto 0); -- Current Addresss Instruction
+	signal instruction:   	                             std_logic_vector(15 downto 0); -- Current Instruction For Format
 	signal read_data_1, read_data_2, write_data, ZE_Immediate_Y, ZE_Immediate_Z, ZE_Decoder_Result, SE_Immediate, Shifted_Immediate, Shifted_Add, SevenShifted, ZE_NumberOne, SevenShifted2, alu_in_2, ALU_Result, ALU_Result_2, last_instr_address, Add1_Result, Add2_Result, Add3_Result, PC_Result, D_Result, TwoComp_Result: std_logic_vector(15 downto 0):= "0000000000000000";
 	signal Immediate_Y:                                  std_logic_vector(3 downto 0);
 	signal Immediate_Z:				                     std_logic_vector(8 downto 0);
@@ -24,13 +21,12 @@ architecture Behavior of main is
 	signal alu_op:                                       std_logic_vector(1 downto 0);
 	signal NumberOne:                                    std_logic_vector(3 downto 0) := "0001";
 	signal Decoder_Result:                               std_logic_vector(3 downto 0) := "0000";
+	signal en:                                           std_logic:= '0';
+	signal CLK:                                          std_logic:= '1';
 
 	 -- Check To Instruction Is Loaded
-	type state is (loading, running, done);
-	signal s: state:= loading;
-
-	-- Enable Signal
-	signal en: std_logic:= '0';
+	type state is (InsWait, InsRun, InsDone);
+	signal s: state:= InsWait;
 
 	component PC
 		port (
@@ -73,9 +69,9 @@ architecture Behavior of main is
 	component Multiplexer5
 		generic (n: natural := 1);
 			port (
-				a, b, c, d, e : in  std_logic_vector(n-1 downto 0);  -- Four data inputs
-				sel:            in  std_logic_vector(2 downto 0);    -- 3-bit selection line
-				z:              out std_logic_vector(n-1 downto 0)   -- Output
+				a, b, c, d, e : in  std_logic_vector(n-1 downto 0); 
+				sel:            in  std_logic_vector(2 downto 0);    
+				z:              out std_logic_vector(n-1 downto 0)   
 			);
 		end component;
 	component Two_Complement
@@ -149,29 +145,28 @@ architecture Behavior of main is
 	end component;
 
 	begin
-
-	process(CLK)
+		process(CLK)
 		begin
 			case s is
-				when running =>
-					en <= '1';
-				when others =>
-					en <= '0';
-			end case;
+			when InsRun =>
+				en <= CLK;
+			when others =>
+				en <= '0';
+		end case;
 
-			if (CLK='1' and CLK'event) then
-				case s is
-					when loading =>
-						s <= running;
-					when running =>
-						if (instr_address > last_instr_address) then
-							s <= done;
-							en <= '0';
-						end if;
-					when others =>
-						null;
-				end case;
-			end if;
+		if (CLK='1' and CLK'event) then
+			case s is
+				when InsWait =>
+					s <= InsRun;
+				when InsRun =>
+					if (instr_address > last_instr_address) then
+						s <= InsDone; 
+						en <= '0';
+					end if;
+				when others =>
+					null;
+			end case;
+		end if;
 	end process;
 
 	opcode      <= instruction(15 downto 13);
