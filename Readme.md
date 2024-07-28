@@ -1,7 +1,7 @@
-
 ---
-
 # HUT: MIPS 16-Bit Single Cycle Processor
+
+![Test](https://s8.uupload.ir/files/mipsd_vhn.jpg)
 
 ## Project Overview
 
@@ -120,7 +120,5 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 ## Contact
 
 For questions or feedback, please contact [am205379@gmail.com].
-
 ---
-
 Feel free to adjust the details according to your specific implementation and project needs.
