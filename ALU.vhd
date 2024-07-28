@@ -12,7 +12,7 @@ entity ALU is
 	);
 end ALU;
 
-architecture behavior of ALU is
+architecture Behavior of ALU is
 
 	signal add:      std_logic_vector(1 downto 0):= "01";
 	signal subtract: std_logic_vector(1 downto 0):= "10";
@@ -24,4 +24,4 @@ architecture behavior of ALU is
 					  in_1  -  in_2  when(ALU_control_fuct=subtract) else
 				      in_1  or in_2  when(ALU_control_fuct=or_op);
 
-end behavior;
+end Behavior;

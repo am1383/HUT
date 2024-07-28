@@ -10,7 +10,7 @@ entity Data_Memory is
     );
 end Data_Memory;
 
-architecture behavioral of Data_Memory is
+architecture Behavioral of Data_Memory is
 
     type Memory_Array is array(0 to 15) of std_logic_vector(15 downto 0);
 
@@ -39,4 +39,4 @@ begin
         end if;
     end process;
 
-end behavioral;
+end Behavioral;

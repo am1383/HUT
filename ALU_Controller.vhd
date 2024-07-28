@@ -9,7 +9,7 @@ entity ALU_Controller is
 	);
 end ALU_Controller;
 
-architecture behavior of ALU_Controller is
+architecture Behavior of ALU_Controller is
 
 	signal add: 	  std_logic_vector(1 downto 0):= "01";
 	signal subtract:  std_logic_vector(1 downto 0):= "10";
@@ -20,4 +20,4 @@ architecture behavior of ALU_Controller is
 		ALU_control_fuct <= add      when(ALU_op="00") else
 							subtract when(ALU_op="01") else
 							or_op    when(ALU_op="10");
-end behavior;
+end Behavior;
