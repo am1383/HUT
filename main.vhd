@@ -4,6 +4,9 @@ use IEEE.std_logic_arith.all;
 use IEEE.numeric_std.all;
 
 entity main is
+	port (
+		CLK : in std_logic
+	);
 end main;
 
 architecture Behavior of main is
@@ -21,7 +24,6 @@ architecture Behavior of main is
 	signal alu_op:                                       std_logic_vector(1 downto 0);
 	signal NumberOne:                                    std_logic_vector(3 downto 0) := "0001";
 	signal Decoder_Result:                               std_logic_vector(3 downto 0) := "0000";
-	signal CLK:                                           std_logic:= '0';
 
 	component PC
 		port (
