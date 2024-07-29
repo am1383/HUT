@@ -8,10 +8,10 @@ end main;
 
 architecture Behavior of main is
 
-	signal instr_address: 		                         std_logic_vector(15 downto 0); -- Address To Run
-	signal next_address:  		                         std_logic_vector(15 downto 0); -- Next Address For PC
-	signal instruction:   	                             std_logic_vector(15 downto 0); -- Current Instruction For Format
-	signal read_data_1, read_data_2, write_data, ZE_Immediate_Y, ZE_Immediate_Z, ZE_Decoder_Result, SE_Immediate, Shifted_Immediate, Shifted_Add, SevenShifted, ZE_NumberOne, SevenShifted2, alu_in_2, ALU_Result, ALU_Result_2, last_instr_address, Add1_Result, Add2_Result, Add3_Result, PC_Result, D_Result, TwoComp_Result: std_logic_vector(15 downto 0):= "0000000000000000";
+	signal instr_address: 		                         std_logic_vector(15 downto 0); 
+	signal next_address:  		                         std_logic_vector(15 downto 0);
+	signal instruction:   	                             std_logic_vector(15 downto 0); 
+	signal read_data_1, read_data_2, write_data, ZE_Immediate_Y, ZE_Immediate_Z, ZE_Decoder_Result, SE_Immediate, Shifted_Immediate, Shifted_Add, SevenShifted, ZE_NumberOne, SevenShifted2, alu_in_2, ALU_Result, ALU_Result_2, Add1_Result, Add2_Result, Add3_Result, PC_Result, D_Result, TwoComp_Result: std_logic_vector(15 downto 0):= "0000000000000000";
 	signal Immediate_Y:                                  std_logic_vector(3 downto 0);
 	signal Immediate_Z:				                     std_logic_vector(8 downto 0);
 	signal opcode, WD_Sel:       		                 std_logic_vector(2 downto 0);
@@ -21,12 +21,7 @@ architecture Behavior of main is
 	signal alu_op:                                       std_logic_vector(1 downto 0);
 	signal NumberOne:                                    std_logic_vector(3 downto 0) := "0001";
 	signal Decoder_Result:                               std_logic_vector(3 downto 0) := "0000";
-	signal en:                                           std_logic:= '0';
-	signal CLK:                                          std_logic:= '1';
-
-	 -- Check To Instruction Is Loaded
-	type state is (InsWait, InsRun, InsDone);
-	signal s: state:= InsWait;
+	signal CLK:                                           std_logic:= '0';
 
 	component PC
 		port (
@@ -37,8 +32,8 @@ architecture Behavior of main is
 	end component;
 	component Instruction_Memory
 		port (
-			read_address:                    in  std_logic_vector (15 downto 0);
-			instruction, last_instr_address: out std_logic_vector (15 downto 0)
+			read_address: in  std_logic_vector (15 downto 0);
+			instruction : out std_logic_vector (15 downto 0)
 		);
 	end component;
 	component Register_File
@@ -143,31 +138,8 @@ architecture Behavior of main is
 			subset3:  out std_logic_vector(3 downto 0)
 		);
 	end component;
-
+	
 	begin
-		process(CLK)
-		begin
-			case s is
-			when InsRun =>
-				en <= CLK;
-			when others =>
-				en <= '0';
-		end case;
-
-		if (CLK='1' and CLK'event) then
-			case s is
-				when InsWait =>
-					s <= InsRun;
-				when InsRun =>
-					if (instr_address > last_instr_address) then
-						s <= InsDone; 
-						en <= '0';
-					end if;
-				when others =>
-					null;
-			end case;
-		end if;
-	end process;
 
 	opcode      <= instruction(15 downto 13);
 	rA_Y        <= instruction(12 downto 9);
@@ -176,9 +148,9 @@ architecture Behavior of main is
 	rA_Z        <= instruction(3 downto 0);
 	Immediate_Z <= instruction(12 downto 4);
 
-	Program_Counter: PC port map (en, next_address, instr_address); 
+	Program_Counter: PC port map (CLK, next_address, instr_address); 
 
-	InstructionMEM: Instruction_Memory port map (instr_address, instruction, last_instr_address);
+	InstructionMEM: Instruction_Memory port map (instr_address, instruction);
 
 	Control: Controller port map (
 		opcode    => opcode,
@@ -218,7 +190,7 @@ architecture Behavior of main is
 	);
 
 	REG: Register_File port map (
-		CLK         => en,
+		CLK         => CLK,
 		reg_write   => reg_write,
 		read_reg_1  => rB_Y,
 		read_reg_2  => rA_Y,                     		
@@ -293,7 +265,7 @@ architecture Behavior of main is
 		write_data => read_data_1,
 		MemWrite   => MemWrite,
 		MemRead    => mem_read,
-		CLK        => en,
+		CLK        => CLK,
 		read_data  => D_Result
 	);
 	
