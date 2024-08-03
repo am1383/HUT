@@ -1,6 +1,6 @@
 # HUT: [MIPS]() 16-Bit Single Cycle Processor
 
-![Test](https://s8.uupload.ir/files/mipsd_vhn.jpg)
+![Test](https://s8.uupload.ir/files/mipsd_3ily.jpg)
 
 ## Project Overview
 
