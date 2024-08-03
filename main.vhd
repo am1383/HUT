@@ -14,16 +14,14 @@ architecture Behavior of main is
 	signal instr_address: 		                         std_logic_vector(15 downto 0); 
 	signal next_address:  		                         std_logic_vector(15 downto 0);
 	signal instruction:   	                             std_logic_vector(15 downto 0); 
-	signal read_data_1, read_data_2, write_data, ZE_Immediate_Y, ZE_Immediate_Z, ZE_Decoder_Result, SE_Immediate, Shifted_Immediate, Shifted_Add, SevenShifted, ZE_NumberOne, SevenShifted2, alu_in_2, ALU_Result, ALU_Result_2, Add1_Result, Add2_Result, Add3_Result, PC_Result, D_Result, TwoComp_Result: std_logic_vector(15 downto 0):= "0000000000000000";
+	signal read_data_1, read_data_2, write_data, ZE_Immediate_Y, ZE_Immediate_Z, ZE_Shift_Result, SE_Immediate_Z, Shifted_Immediate, Shifted_Add, SevenShifted, SevenShifted2, alu_in_2, ALU_Result, ALU_Result_2, Add1_Result, Add2_Result, Shift_Result, Add3_Result, PC_Result, Data_Result, TwoComp_Result: std_logic_vector(15 downto 0):= "0000000000000000";
 	signal Immediate_Y:                                  std_logic_vector(3 downto 0);
 	signal Immediate_Z:				                     std_logic_vector(8 downto 0);
 	signal opcode, WD_Sel:       		                 std_logic_vector(2 downto 0);
 	signal rA_Y, rB_Y, rA_Z, write_reg:                  std_logic_vector(3 downto 0);
 	signal alu_control_fuct:     	                     std_logic_vector(1 downto 0);
-	signal WR_Sel, PC_Sel, mem_read, mem_to_reg, MemWrite, reg_write: std_logic:= '0';
-	signal alu_op:                                       std_logic_vector(1 downto 0);
-	signal NumberOne:                                    std_logic_vector(3 downto 0) := "0001";
-	signal Decoder_Result:                               std_logic_vector(3 downto 0) := "0000";
+	signal PC_Sel, mem_read, mem_to_reg, MemWrite, reg_write: std_logic:= '0';
+	signal alu_op, WR_Sel:                               std_logic_vector(1 downto 0);
 
 	component PC
 		port (
@@ -49,21 +47,31 @@ architecture Behavior of main is
 	end component;
 	component Controller
 		port (
-			opcode:                                         in  std_logic_vector(2 downto 0);
-			PC_Sel, WR_Sel, MemWrite, reg_write, mem_read:  out std_logic;
-			WD_Sel:                                         out std_logic_vector(2 downto 0);
-			alu_op:                                         out std_logic_vector(1 downto 0)
+			opcode:                                 in  std_logic_vector(2 downto 0);
+			PC_Sel, MemWrite, reg_write, mem_read:  out std_logic;
+			WD_Sel:                                 out std_logic_vector(2 downto 0);
+			alu_op, WR_Sel:                         out std_logic_vector(1 downto 0)
 		);
 	end component;
-	component Multiplexer
+	component Multiplexer is
 		generic (n: natural:= 1);
-			port (
-				x, y: in  std_logic_vector(n-1 downto 0);
-				s:    in  std_logic;
-				z:    out std_logic_vector(n-1 downto 0)
-			);
+		port (
+			x, y: in  std_logic_vector(n-1 downto 0);
+			s:    in  std_logic;
+			z:    out std_logic_vector(n-1 downto 0)
+		);
 	end component;
-	component Multiplexer5
+	component Multiplexer3 is 
+		generic(n: natural:= 1);
+		port ( 
+			sel: in  std_logic_vector (1 downto 0);
+			d0 : in  std_logic_vector (n-1 downto 0);
+			d1 : in  std_logic_vector (n-1 downto 0);
+			d2 : in  std_logic_vector (n-1 downto 0);
+			y  : out std_logic_vector (n-1 downto 0)
+		);
+	end component;
+	component Multiplexer5 is
 		generic (n: natural := 1);
 			port (
 				a, b, c, d, e : in  std_logic_vector(n-1 downto 0); 
@@ -71,53 +79,53 @@ architecture Behavior of main is
 				z:              out std_logic_vector(n-1 downto 0)   
 			);
 		end component;
-	component Two_Complement
-		Port ( 
-			InputTwo:  in  std_logic_vector (15 downto 0);
-			OutputTwo: out std_logic_vector (15 downto 0)
-		);
+	component Two_Complement is
+			port ( 
+				InputTwo:  in  std_logic_vector(15 downto 0);
+				OutputTwo: out std_logic_vector(15 downto 0)
+			);
 	end component;
-	component ALU_Controller
+	component ALU_Controller is
 		port (
 			alu_op:           in  std_logic_vector(1 downto 0);
 			alu_control_fuct: out std_logic_vector(1 downto 0)
 		);
 	end component;
-	component Sign_Extend
+	component Sign_Extend is
 		generic (n: natural := 1);
 		port (
 			SE_Input:  in  std_logic_vector(n-1 downto 0);
 			SE_Output: out std_logic_vector(15 downto 0)
 		);
 	end component;
-    component Zero_Extend
+    component Zero_Extend is
 		generic (n: natural := 1);
         port (
             ZF_Input:  in  std_logic_vector(n-1 downto 0);
             ZF_Output: out std_logic_vector(15 downto 0)
         );
     end component;
-	component ALU
+	component ALU is
 		generic (n: natural := 1);
 		port (
-			in_1, in_2: 	  std_logic_vector(n-1 downto 0);
+			in_1, in_2: 	      std_logic_vector(n-1 downto 0);
 			alu_control_fuct: in  std_logic_vector(1 downto 0);
 			ALU_Result:       out std_logic_vector(n-1 downto 0)
 		);
 	end component;
-	component ShiftOne
+	component ShiftOne is
 		port (
 			x: in  std_logic_vector(15 downto 0);
 			y: out std_logic_vector(15 downto 0)
 		);
 	end component;
-	component ShiftSeven 
+	component ShiftSeven is
 		port(
 			x: in  std_logic_vector(8 downto 0);
 			y: out std_logic_vector(15 downto 0)
 		);
 		end component;
-	component Adder
+	component Adder is
 		port (
 			In1, In2:   in  std_logic_vector(15 downto 0);
 			Add_Output: out std_logic_vector(15 downto 0)
@@ -130,14 +138,10 @@ architecture Behavior of main is
 			read_data: 				out std_logic_vector(15 downto 0)
 		);
 	end component;
-	component Decoder is
-		port (
-			input:    in  std_logic_vector(3 downto 0);
-			output:   out std_logic_vector(15 downto 0);
-			subset0:  out std_logic_vector(3 downto 0);
-			subset1:  out std_logic_vector(3 downto 0);
-			subset2:  out std_logic_vector(3 downto 0);
-			subset3:  out std_logic_vector(3 downto 0)
+	component LeftShift is
+		port(
+			inputL   : in  std_logic_vector (3 downto 0);
+			outputL  : out std_logic_vector (15 downto 0)
 		);
 	end component;
 	
@@ -165,7 +169,7 @@ architecture Behavior of main is
 		alu_op    => alu_op 
 	);
 
-	SignEx: Sign_Extend generic map(9) port map (Immediate_Z, SE_Immediate);
+	SignEx: Sign_Extend generic map(9) port map (Immediate_Z, SE_Immediate_Z);
 
 	ALU_Control: ALU_Controller port map (alu_op, alu_control_fuct);
 
@@ -184,11 +188,12 @@ architecture Behavior of main is
 	);
 
 	-- Multiplexer Choose Between Write Registers Instruction's
-	MUX2: Multiplexer generic map(4) port map (
-		x => rA_Y, 
-		y => rA_Z, 
-		s => WR_Sel,
-		z => write_reg
+	MUX2: Multiplexer3 generic map(4) port map (
+		d0  => rA_Y, 
+		d1  => rA_Z, 
+		d2  => rB_Y,
+		sel => WR_Sel,
+		y   => write_reg
 	);
 
 	REG: Register_File port map (
@@ -202,17 +207,14 @@ architecture Behavior of main is
 		read_data_2 => read_data_2
 	);
 
-	DEC: Decoder port map (
-		input   => rB_Y,
-		subset1 => Decoder_Result
+	LShift: LeftShift port map (
+		inputL  => Immediate_Y,
+		outputL => Shift_Result
 	);
 
-	ZeroEx5: Zero_Extend generic map(4) port map (Decoder_Result, ZE_Decoder_Result);
+	ALUTwo: ALU generic map(16) port map (Shift_Result, read_data_1, alu_control_fuct, ALU_Result_2);
 
-	ZeroEx6: Zero_Extend generic map(4) port map (NumberOne, ZE_NumberOne);
-
-	ALUTwo: ALU generic map(16) port map (ZE_Decoder_Result, ZE_NumberOne, alu_control_fuct, ALU_Result_2);
-
+	-- Adder PC Counter
 	ADD1: Adder port map (
 		In1        => instr_address,
 		In2        => "0000000000000010", -- 2+ Bit Program Counter
@@ -227,7 +229,7 @@ architecture Behavior of main is
 
 	ADD3: Adder port map (
 		In1        => Add2_Result,
-		In2        => SE_Immediate,
+		In2        => SE_Immediate_Z,
 		Add_Output => Add3_Result
 	);
 
@@ -247,7 +249,7 @@ architecture Behavior of main is
 	);
 
 	TwoComp: Two_Complement port map (
-		InputTwo  => read_data_2,
+		InputTwo  => read_data_1,
 		OutputTwo => TwoComp_Result
 	);
 
@@ -256,7 +258,7 @@ architecture Behavior of main is
 		a   => TwoComp_Result, 
 		b   => ALU_Result,
 		c   => SevenShifted,  
-		d   => D_Result,
+		d   => Data_Result,
 		e   => ALU_Result_2,
 		sel => WD_Sel,
 		z   => write_data
@@ -268,7 +270,7 @@ architecture Behavior of main is
 		MemWrite   => MemWrite,
 		MemRead    => mem_read,
 		CLK        => CLK,
-		read_data  => D_Result
+		read_data  => Data_Result
 	);
 	
 end Behavior;
