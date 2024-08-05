@@ -4,8 +4,8 @@ use IEEE.numeric_std.all;
 
 entity LeftShift is
     port(
-        inputL  : in std_logic_vector (3 downto 0);
-        outputL : out std_logic_vector (15 downto 0)
+        inputL  : in  std_logic_vector(3 downto 0);
+        outputL : out std_logic_vector(15 downto 0)
     );
 end LeftShift;
 

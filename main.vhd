@@ -11,17 +11,17 @@ end main;
 
 architecture Behavior of main is
 
-	signal instr_address: 		                         std_logic_vector(15 downto 0); 
-	signal next_address:  		                         std_logic_vector(15 downto 0);
-	signal instruction:   	                             std_logic_vector(15 downto 0); 
+	signal instr_address: 		                              std_logic_vector(15 downto 0); 
+	signal next_address:  		                              std_logic_vector(15 downto 0);
+	signal instruction:   	                                  std_logic_vector(15 downto 0); 
 	signal read_data_1, read_data_2, write_data, ZE_Immediate_Y, ZE_Immediate_Z, ZE_Shift_Result, SE_Immediate_Z, Shifted_Immediate, Shifted_Add, SevenShifted, SevenShifted2, alu_in_2, ALU_Result, ALU_Result_2, Add1_Result, Add2_Result, Shift_Result, Add3_Result, PC_Result, Data_Result, TwoComp_Result: std_logic_vector(15 downto 0):= "0000000000000000";
-	signal Immediate_Y:                                  std_logic_vector(3 downto 0);
-	signal Immediate_Z:				                     std_logic_vector(8 downto 0);
-	signal opcode, WD_Sel:       		                 std_logic_vector(2 downto 0);
-	signal rA_Y, rB_Y, rA_Z, write_reg:                  std_logic_vector(3 downto 0);
-	signal alu_control_fuct:     	                     std_logic_vector(1 downto 0);
+	signal Immediate_Y:                                       std_logic_vector(3 downto 0);
+	signal Immediate_Z:				                          std_logic_vector(8 downto 0);
+	signal opcode, WD_Sel:       		                      std_logic_vector(2 downto 0);
+	signal rA_Y, rB_Y, rA_Z, write_reg:                       std_logic_vector(3 downto 0);
+	signal alu_control_fuct:     	                          std_logic_vector(1 downto 0);
 	signal PC_Sel, mem_read, mem_to_reg, MemWrite, reg_write: std_logic:= '0';
-	signal alu_op, WR_Sel:                               std_logic_vector(1 downto 0);
+	signal alu_op, WR_Sel:                                    std_logic_vector(1 downto 0);
 
 	component PC
 		port (
@@ -64,11 +64,11 @@ architecture Behavior of main is
 	component Multiplexer3 is 
 		generic(n: natural:= 1);
 		port ( 
-			sel: in  std_logic_vector (1 downto 0);
-			d0 : in  std_logic_vector (n-1 downto 0);
-			d1 : in  std_logic_vector (n-1 downto 0);
-			d2 : in  std_logic_vector (n-1 downto 0);
-			y  : out std_logic_vector (n-1 downto 0)
+			sel: in  std_logic_vector(1 downto 0);
+			d0 : in  std_logic_vector(n-1 downto 0);
+			d1 : in  std_logic_vector(n-1 downto 0);
+			d2 : in  std_logic_vector(n-1 downto 0);
+			y  : out std_logic_vector(n-1 downto 0)
 		);
 	end component;
 	component Multiplexer5 is
@@ -133,8 +133,8 @@ architecture Behavior of main is
 	end component;
 	component Data_Memory is
 		port (
-			address, write_data: 	in std_logic_vector(15 downto 0);
-			MemWrite, MemRead, CLK: in std_logic;
+			address, write_data: 	in  std_logic_vector(15 downto 0);
+			MemWrite, MemRead, CLK: in  std_logic;
 			read_data: 				out std_logic_vector(15 downto 0)
 		);
 	end component;

@@ -5,8 +5,7 @@ use IEEE.numeric_std.all;
 entity Instruction_Memory is
     port (
         read_address:       in  std_logic_vector(15 downto 0);
-        instruction:        out std_logic_vector(15 downto 0);
-        last_instr_address: out std_logic_vector(15 downto 0)
+        instruction:        out std_logic_vector(15 downto 0)
     );
 end Instruction_Memory;
 
@@ -21,7 +20,7 @@ architecture Behavioral of Instruction_Memory is
         "1000000000010001", 
         "1010000000010101", 
         "1100000000000110", 
-        "0000000000000111", 
+        "0110000000010001", 
         "0000000000001000", 
         "0000000000001001", 
         "0000000000001010", 
